@@ -1,0 +1,21 @@
+{
+  "name": "health-and-wellness-platform",
+  "version": "1.0.0",
+  "description": "Health and Wellness Management Platform",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.taskgrids.com/vivek.panchal/health-and-wellness-platform.git"
+  },
+  "author": "Vivek Panchal",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
