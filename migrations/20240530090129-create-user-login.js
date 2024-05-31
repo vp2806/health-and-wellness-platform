@@ -39,9 +39,6 @@ module.exports = {
               allowNull: false,
               type: Sequelize.STRING(39),
             },
-            token_deleted: {
-              type: Sequelize.DATE,
-            },
             device: {
               allowNull: false,
               type: Sequelize.TEXT,

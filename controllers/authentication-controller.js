@@ -3,13 +3,15 @@ const {
   getUsers,
   updateUser,
   deleteUser,
-  activateAccount,
   getUser,
 } = require("../repositories/authentication-repository");
 const { generalResponse } = require("../helpers/response-helper");
-const { generateRandomString } = require("../helpers/random-string-generator");
+const {
+  generateRandomString,
+} = require("../helpers/random-string-generator-helper");
 const bcrypt = require("bcrypt");
 const { validationResult } = require("express-validator");
+const { updateUserLogin } = require("../repositories/user-login-repository");
 
 async function registerUser(req, res) {
   try {
@@ -122,6 +124,8 @@ async function removeUser(req, res) {
 async function authenticateUser(req, res) {
   try {
     const errors = validationResult(req);
+    let timeDifference = 0;
+
     if (!errors.isEmpty()) {
       return generalResponse(
         res,
@@ -148,7 +152,12 @@ async function authenticateUser(req, res) {
       );
     }
 
-    const timeDifference = new Date() - user.dataValues.created_at;
+    if (user.dataValues.created_at === user.dataValues.updated_at) {
+      timeDifference = new Date() - user.dataValues.created_at;
+    } else {
+      timeDifference = new Date() - user.dataValues.updated_at;
+    }
+
     if (timeDifference > 2 * 60 * 60 * 1000) {
       return generalResponse(
         res,
@@ -163,9 +172,11 @@ async function authenticateUser(req, res) {
     const { password } = req.body;
     const passwordHash = bcrypt.hashSync(password, saltRounds);
 
-    await activateAccount(
+    await updateUser(
       {
         password: passwordHash,
+        status: 1,
+        activation_code: null,
       },
       {
         where: {
@@ -187,16 +198,27 @@ async function authenticateUser(req, res) {
   }
 }
 
-async function loginUser(req, res) {
+async function loginUser(req, res, next) {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return generalResponse(
+        res,
+        { status: false, errors: errors.array() },
+        "Invalid user payload",
+        "error",
+        true
+      );
+    }
+
     const { email, password } = req.body;
-    const user = await getUsers({
+    const user = await getUser({
       where: {
         email: email,
       },
     });
 
-    if (user.length === 0) {
+    if (!user) {
       return generalResponse(
         res,
         { success: false },
@@ -206,7 +228,7 @@ async function loginUser(req, res) {
       );
     }
 
-    if (!bcrypt.compareSync(password, user[0].password)) {
+    if (!bcrypt.compareSync(password, user.password)) {
       return generalResponse(
         res,
         { success: false },
@@ -215,8 +237,10 @@ async function loginUser(req, res) {
         true
       );
     }
-
-    return generalResponse(res, user, "Logged In", true);
+    req.user = {
+      id: user.dataValues.id,
+    };
+    next();
   } catch (error) {
     console.error("Error logging user", error);
     return generalResponse(
@@ -229,6 +253,104 @@ async function loginUser(req, res) {
   }
 }
 
+async function resetPassword(req, res) {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return generalResponse(
+        res,
+        { status: false, errors: errors.array() },
+        "Invalid user payload",
+        "error",
+        true
+      );
+    }
+
+    const user = await getUser({
+      where: {
+        email: req.body.email,
+      },
+    });
+
+    if (!user) {
+      return generalResponse(
+        res,
+        { success: false },
+        "Please enter a valid email.",
+        "error",
+        true
+      );
+    }
+
+    const activationCode = generateRandomString(16);
+    await updateUser(
+      {
+        activation_code: activationCode,
+      },
+      {
+        where: {
+          id: user.dataValues.id,
+        },
+      }
+    );
+
+    return generalResponse(
+      res,
+      {
+        activationCode,
+      },
+      "Email is verified and now you can reset your password",
+      true
+    );
+  } catch (error) {
+    console.error("Error fetching user while resetting password", error);
+    return generalResponse(
+      res,
+      { success: false },
+      "Something went wrong while resetting user password",
+      "error",
+      true
+    );
+  }
+}
+
+async function logoutUser(req, res) {
+  try {
+    await updateUserLogin(
+      {
+        logged_out_at: new Date(),
+      },
+      {
+        where: {
+          token_id: req.user.tokenId,
+        },
+      }
+    );
+
+    return generalResponse(
+      res,
+      {
+        success: true,
+      },
+      "Logged out successfully",
+      true
+    );
+  } catch (error) {
+    console.error("Error fetching user while logging out user", error);
+    return generalResponse(
+      res,
+      { success: false },
+      "Something went wrong while logging out user",
+      "error",
+      true
+    );
+  }
+}
+
+async function testFunction(req, res) {
+  return res.json({ success: true });
+}
+
 module.exports = {
   registerUser,
   getAllUsers,
@@ -236,4 +358,7 @@ module.exports = {
   removeUser,
   authenticateUser,
   loginUser,
+  resetPassword,
+  logoutUser,
+  testFunction,
 };

@@ -23,7 +23,7 @@ const userValidation = [
     .withMessage("Invalid Contact Number."),
 ];
 
-const passwordValidation = [
+const setPasswordValidation = [
   body("password")
     .trim()
     .notEmpty()
@@ -35,7 +35,33 @@ const passwordValidation = [
     .notEmpty()
     .withMessage("Confirm Password can't be empty.")
     .isLength({ min: 8 })
-    .withMessage("Password must be at least 8 characters."),
+    .withMessage("Password must be at least 8 characters.")
+    .custom((value, { req }) => {
+      return value === req.body.password;
+    })
+    .withMessage("Password is not match."),
 ];
 
-module.exports = { userValidation, passwordValidation };
+const emailValidation = [
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email can't be empty.")
+    .isEmail()
+    .withMessage("Invalid Email Adress."),
+];
+
+const passwordValidation = [
+  body("password")
+    .trim()
+    .notEmpty()
+    .withMessage("Password can't be empty.")
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters."),
+];
+module.exports = {
+  userValidation,
+  setPasswordValidation,
+  emailValidation,
+  passwordValidation,
+};

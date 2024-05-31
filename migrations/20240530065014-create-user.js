@@ -48,7 +48,6 @@ module.exports = {
               type: Sequelize.STRING,
             },
             activation_code: {
-              allowNull: false,
               type: Sequelize.STRING(16),
             },
             status: {

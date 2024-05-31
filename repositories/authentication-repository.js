@@ -40,16 +40,6 @@ async function deleteUser(userPayLoad) {
   }
 }
 
-async function activateAccount(userPayLoad, options) {
-  try {
-    const authenticateUser = await user.update(userPayLoad, options);
-    return authenticateUser;
-  } catch (error) {
-    console.error("Error authenticating user.", error);
-    throw error;
-  }
-}
-
 async function getUser(userPayLoad) {
   try {
     const getUser = await user.findOne(userPayLoad);
@@ -64,6 +54,5 @@ module.exports = {
   getUsers,
   updateUser,
   deleteUser,
-  activateAccount,
   getUser,
 };

@@ -23,7 +23,6 @@ module.exports = (sequelize, DataTypes) => {
       logged_in_at: DataTypes.DATE,
       logged_out_at: DataTypes.DATE,
       ip_address: DataTypes.STRING(39),
-      token_deleted: DataTypes.DATE,
       device: DataTypes.TEXT,
     },
     {
