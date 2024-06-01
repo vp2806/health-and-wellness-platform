@@ -45,7 +45,7 @@ router.post(
   sendToken
 );
 
-router.get(
+router.delete(
   "/logout",
   passport.authenticate("jwt", {
     session: false,
