@@ -2,9 +2,11 @@ const { Router } = require("express");
 const router = Router();
 const {
   addMedication,
-  getAllMedications,
+  getUserMedications,
   modifyMedication,
   removeMedication,
+  addMedicationActivity,
+  getUserMedicationActivities,
 } = require("../controllers/medication-controller");
 const passport = require("passport");
 
@@ -16,14 +18,16 @@ router.post(
   }),
   addMedication
 );
+
 router.get(
   "/get-medications",
   passport.authenticate("jwt", {
     session: false,
     failureRedirect: "/get-users",
   }),
-  getAllMedications
+  getUserMedications
 );
+
 router.put(
   "/update-medication/:id",
   passport.authenticate("jwt", {
@@ -32,6 +36,7 @@ router.put(
   }),
   modifyMedication
 );
+
 router.delete(
   "/delete-medication/:id",
   passport.authenticate("jwt", {
@@ -39,6 +44,24 @@ router.delete(
     failureRedirect: "/get-users",
   }),
   removeMedication
+);
+
+router.post(
+  "/mark-medicine-as-done/:authCode",
+  passport.authenticate("jwt", {
+    session: false,
+    failureRedirect: "/get-users",
+  }),
+  addMedicationActivity
+);
+
+router.get(
+  "/get-medicine-activities",
+  passport.authenticate("jwt", {
+    session: false,
+    failureRedirect: "/get-users",
+  }),
+  getUserMedicationActivities
 );
 
 module.exports = router;

@@ -44,7 +44,7 @@ async function deleteMedication(medicationPayLoad) {
   }
 }
 
-async function getMedicationWithUser(options) {
+async function getMedicationWithUser() {
   try {
     const medications = await medication.findAll({
       include: {
@@ -62,15 +62,38 @@ async function getMedicationWithUser(options) {
         ],
         [Op.or]: [
           {
-            start_date: new Date().toJSON().slice(0, 10),
+            [Op.and]: [
+              {
+                start_date: new Date().toJSON().slice(0, 10),
+              },
+              {
+                end_date: null,
+              },
+            ],
           },
           {
-            end_date: null,
+            [Op.and]: [
+              {
+                end_date: {
+                  [Op.gte]: new Date(),
+                },
+              },
+              {
+                day: null,
+              },
+            ],
           },
           {
-            end_date: {
-              [Op.gte]: new Date(),
-            },
+            [Op.and]: [
+              {
+                end_date: {
+                  [Op.gte]: new Date(),
+                },
+              },
+              {
+                day: new Date().getDay(),
+              },
+            ],
           },
         ],
         time: new Date().toJSON().slice(11, 19),

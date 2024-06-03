@@ -4,7 +4,7 @@ const { config } = require("dotenv");
 config({ path: `.env` });
 const router = require("./routes/index-route");
 const app = express();
-require("./jobs/medication-notification-job");
+// require("./jobs/medication-notification-job");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

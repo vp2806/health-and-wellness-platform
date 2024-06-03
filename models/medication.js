@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       medication_name: DataTypes.STRING(50),
       description: DataTypes.STRING,
       day: DataTypes.TINYINT,
-      time: DataTypes.STRING(9),
+      time: DataTypes.TIME,
       start_date: DataTypes.DATEONLY,
       end_date: DataTypes.DATEONLY,
     },

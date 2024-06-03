@@ -2,12 +2,15 @@ const cron = require("node-cron");
 const nodemailer = require("nodemailer");
 const {
   getMedicationWithUser,
+  updateMedication,
 } = require("../repositories/medication-repository");
+const {
+  generateRandomString,
+} = require("../helpers/random-string-generator-helper");
 
-async function sendMedicationNotification() {
+async function sendMedicineNotification() {
   const medications = await getMedicationWithUser();
 
-  console.log(medications, "..............");
   let transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
@@ -16,7 +19,20 @@ async function sendMedicationNotification() {
     },
   });
 
-  medications.forEach((medication) => {
+  medications.forEach(async (medication) => {
+    const authenticationCode = generateRandomString(64);
+
+    await updateMedication(
+      {
+        authentication_code: authenticationCode,
+      },
+      {
+        where: {
+          id: medication.id,
+        },
+      }
+    );
+
     const mailTemplate = `
             <!DOCTYPE html>
             <html>
@@ -25,11 +41,9 @@ async function sendMedicationNotification() {
             </head>
             <body>
                 <p>Hello, ${medication.user.first_name} ${medication.user.last_name}</p>
-                <p>I hope this email finds you well. This is the reminder of <strong>${medication.medication_name}</strong> medicine at <strong>${medication.time}{}[24 Hours Format]<strong>. Please click on the <a href="http://localhost:5000/get-users">Mark as Done</a> to mark it as done.</p>
-                <hr>
-
-                <p>Regards,</p>
-                <p>Health and Wellness Management Platform</p>
+                <p>I hope this email finds you well. This is the reminder of <strong>${medication.medication_name}</strong> medicine at <strong>${medication.time} [UTC TIME +00:00]</strong>. Please click on the <a href="http://localhost:5000/mark-medicine-as-done/${authenticationCode}">Mark as Done</a> to get it done.</p>
+                <p style="margin-bottom: 0">Regards,</p>
+                <p style="margin-top: 0">Health and Wellness Management Platform</p>
             </body>
             </html>
         `;
@@ -53,6 +67,6 @@ async function sendMedicationNotification() {
   console.log("Cron job executed at:", new Date());
 }
 
-cron.schedule("* * * * *", () => {
-  sendMedicationNotification();
+cron.schedule("*/30 * * * *", () => {
+  sendMedicineNotification();
 });
