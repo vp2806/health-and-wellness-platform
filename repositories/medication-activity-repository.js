@@ -13,19 +13,16 @@ async function createMedicationActivity(medicationActivityPayLoad) {
   }
 }
 
-async function getMedicationActivities(userId) {
+async function getMedicationActivities(options) {
   try {
     const medicationActivities = await medication_activity.findAll({
       include: {
         model: medication,
-        exclude: ["id", "created_at", "upated_at", "deleted_at"],
-        include: {
-          model: medication_add_type,
-          include: ["type"],
-        },
+        attributes: ["id", "user_id"],
       },
       where: {
-        "$medication.user_id$": userId,
+        "$medication.user_id$": options.userId,
+        "$medication.id$": options.id,
       },
     });
     return medicationActivities;
@@ -35,4 +32,49 @@ async function getMedicationActivities(userId) {
   }
 }
 
-module.exports = { createMedicationActivity, getMedicationActivities };
+async function updateMedicationActivity(medicationActivityPayLoad, options) {
+  try {
+    const updateMedicationActivity = await medication_activity.update(
+      medicationActivityPayLoad,
+      options
+    );
+    return updateMedicationActivity;
+  } catch (error) {
+    console.error("Error updating a medication activity", error);
+    throw error;
+  }
+}
+
+async function getMedicationWeeklyActivity() {
+  try {
+    const weeklyMedicationActivities = await medication_activity.findAll({
+      include: {
+        model: medication,
+        attributes: {
+          exclude: ["created_at", "updated_at", "deleted_at"],
+        },
+      },
+      where: {
+        notification_date: {
+          [db.Sequelize.Op.lte]: new Date().toJSON().slice(0, 10),
+          [db.Sequelize.Op.gte]: new Date(
+            new Date().setDate(new Date().getDate() - 6)
+          )
+            .toJSON()
+            .slice(0, 10),
+        },
+      },
+    });
+    return weeklyMedicationActivities;
+  } catch (error) {
+    console.error("Error fetching a weekly medication activity", error);
+    throw error;
+  }
+}
+
+module.exports = {
+  createMedicationActivity,
+  getMedicationActivities,
+  updateMedicationActivity,
+  getMedicationWeeklyActivity,
+};

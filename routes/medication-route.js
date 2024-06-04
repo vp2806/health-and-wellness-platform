@@ -5,7 +5,7 @@ const {
   getUserMedications,
   modifyMedication,
   removeMedication,
-  addMedicationActivity,
+  markMedicationActivity,
   getUserMedicationActivities,
 } = require("../controllers/medication-controller");
 const passport = require("passport");
@@ -46,22 +46,13 @@ router.delete(
   removeMedication
 );
 
-router.post(
-  "/mark-medicine-as-done/:authCode",
-  passport.authenticate("jwt", {
-    session: false,
-    failureRedirect: "/get-users",
-  }),
-  addMedicationActivity
-);
-
 router.get(
-  "/get-medicine-activities",
+  "/mark-medicine-as-done",
   passport.authenticate("jwt", {
     session: false,
     failureRedirect: "/get-users",
   }),
-  getUserMedicationActivities
+  markMedicationActivity
 );
 
 module.exports = router;

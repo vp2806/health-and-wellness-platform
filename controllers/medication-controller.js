@@ -7,8 +7,8 @@ const {
   deleteMedication,
 } = require("../repositories/medication-repository");
 const {
-  createMedicationActivity,
   getMedicationActivities,
+  updateMedicationActivity,
 } = require("../repositories/medication-activity-repository");
 
 const fields = {
@@ -142,76 +142,52 @@ async function removeMedication(req, res) {
   }
 }
 
-async function addMedicationActivity(req, res) {
+async function markMedicationActivity(req, res) {
   try {
-    const medication = await getMedications({
-      where: {
-        authentication_code: req.params.authCode,
-      },
+    const medication = await getMedicationActivities({
+      id: req.query.medicine,
+      userId: req.user.id,
     });
 
-    console.log(medication);
-
     if (medication.length === 0) {
+      return generalResponse(res, [], "Not Authorized", true, true, 401);
+    }
+
+    if (medication.length > 0 && medication[0].done_at) {
       return generalResponse(
         res,
         [],
-        "You have already mark the medicine done.",
+        "You have already mark the medicine done",
         true,
         true
       );
     }
 
-    const newMedicationActivity = await createMedicationActivity({
-      medication_id: medication[0].id,
-      done_at: new Date(),
-    });
-
-    await updateMedication(
+    const markingMedicationActivity = await updateMedicationActivity(
       {
-        authentication_code: null,
+        done_at: new Date(),
       },
       {
         where: {
-          id: medication[0].id,
+          medication_id: req.query.medicine,
+          notification_date: req.query.current,
         },
       }
     );
 
     return generalResponse(
       res,
-      newMedicationActivity,
+      markingMedicationActivity,
       "The medicine is marked as done.",
       true,
       true
     );
   } catch (error) {
-    console.error("Error inserting medicine activity", error);
+    console.error("Error marking medicine activity", error);
     return generalResponse(
       res,
       { success: false },
       "Something went wrong while marking the medicine as done.",
-      "error",
-      true
-    );
-  }
-}
-
-async function getUserMedicationActivities(req, res) {
-  try {
-    const medicationActivities = await getMedicationActivities(req.user.id);
-    return generalResponse(
-      res,
-      medicationActivities,
-      "Fetched Medication Activities",
-      true
-    );
-  } catch (error) {
-    console.error("Error fetching medication activities", error);
-    return generalResponse(
-      res,
-      { success: false },
-      "Something went wrong while fetching medication activities",
       "error",
       true
     );
@@ -223,6 +199,5 @@ module.exports = {
   getUserMedications,
   modifyMedication,
   removeMedication,
-  addMedicationActivity,
-  getUserMedicationActivities,
+  markMedicationActivity,
 };

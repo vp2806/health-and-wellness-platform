@@ -2,11 +2,10 @@ const cron = require("node-cron");
 const nodemailer = require("nodemailer");
 const {
   getMedicationWithUser,
-  updateMedication,
 } = require("../repositories/medication-repository");
 const {
-  generateRandomString,
-} = require("../helpers/random-string-generator-helper");
+  createMedicationActivity,
+} = require("../repositories/medication-activity-repository");
 
 async function sendMedicineNotification() {
   const medications = await getMedicationWithUser();
@@ -20,19 +19,6 @@ async function sendMedicineNotification() {
   });
 
   medications.forEach(async (medication) => {
-    const authenticationCode = generateRandomString(64);
-
-    await updateMedication(
-      {
-        authentication_code: authenticationCode,
-      },
-      {
-        where: {
-          id: medication.id,
-        },
-      }
-    );
-
     const mailTemplate = `
             <!DOCTYPE html>
             <html>
@@ -40,8 +26,18 @@ async function sendMedicineNotification() {
                 <title>Medicine Reminder</title>
             </head>
             <body>
-                <p>Hello, ${medication.user.first_name} ${medication.user.last_name}</p>
-                <p>I hope this email finds you well. This is the reminder of <strong>${medication.medication_name}</strong> medicine at <strong>${medication.time} [UTC TIME +00:00]</strong>. Please click on the <a href="http://localhost:5000/mark-medicine-as-done/${authenticationCode}">Mark as Done</a> to get it done.</p>
+                <p>Hello, ${medication.user.first_name} ${
+      medication.user.last_name
+    }</p>
+                <p>I hope this email finds you well. This is the reminder of <strong>${
+                  medication.medication_name
+                }</strong> medicine at <strong>${
+      medication.time
+    } [UTC TIME +00:00]</strong>. Please click on the <a href="http://localhost:5000/mark-medicine-as-done?medicine=${
+      medication.id
+    }&current=${new Date()
+      .toJSON()
+      .slice(0, 10)}">Mark as Done</a> to get it done.</p>
                 <p style="margin-bottom: 0">Regards,</p>
                 <p style="margin-top: 0">Health and Wellness Management Platform</p>
             </body>
@@ -55,11 +51,15 @@ async function sendMedicineNotification() {
       html: mailTemplate,
     };
 
-    transporter.sendMail(messageOptions, function (error, info) {
+    transporter.sendMail(messageOptions, async function (error, info) {
       if (error) {
         throw error;
       } else {
         console.log("Email successfully sent!");
+        await createMedicationActivity({
+          medication_id: medication.id,
+          notification_date: new Date().toJSON().slice(0, 10),
+        });
       }
     });
   });

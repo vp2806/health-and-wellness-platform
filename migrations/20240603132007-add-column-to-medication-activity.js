@@ -5,36 +5,40 @@ module.exports = {
     try {
       await queryInterface.sequelize.transaction(async (t) => {
         await queryInterface.addColumn(
-          "medications",
-          "authentication_code",
+          "medication_activities",
+          "notification_date",
           {
-            type: Sequelize.STRING(64),
+            allowNull: false,
+            type: Sequelize.DATEONLY,
           },
           {
-            validate: {
-              isAlphanumeric: true,
-            },
             transaction: t,
           }
         );
       });
     } catch (error) {
-      console.error("Failed to add column to medications table", error);
+      console.error(
+        "Failed to add column to medication_activities table",
+        error
+      );
     }
   },
   async down(queryInterface, Sequelize) {
     try {
       await queryInterface.sequelize.transaction(async (t) => {
         await queryInterface.removeColumn(
-          "medications",
-          "authentication_code",
+          "medication_activities",
+          "notification_date",
           {
             transaction: t,
           }
         );
       });
     } catch (error) {
-      console.error("Failed to drop column to medications table", error);
+      console.error(
+        "Failed to drop column to medication_activities table",
+        error
+      );
     }
   },
 };
