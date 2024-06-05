@@ -1,5 +1,5 @@
 const db = require("../models");
-const { medication_activity, medication, medication_add_type } = db;
+const { medication_activity, medication, user, medication_add_type } = db;
 
 async function createMedicationActivity(medicationActivityPayLoad) {
   try {
@@ -53,6 +53,15 @@ async function getMedicationWeeklyActivity() {
         attributes: {
           exclude: ["created_at", "updated_at", "deleted_at"],
         },
+        include: [
+          {
+            model: user,
+            attributes: ["id", "first_name", "last_name", "email"],
+          },
+          {
+            model: medication_add_type,
+          },
+        ],
       },
       where: {
         notification_date: {

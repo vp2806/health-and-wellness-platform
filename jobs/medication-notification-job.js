@@ -1,5 +1,6 @@
 const cron = require("node-cron");
-const nodemailer = require("nodemailer");
+const { config } = require("dotenv");
+config({ path: `.env` });
 const {
   getMedicationWithUser,
 } = require("../repositories/medication-repository");
@@ -9,14 +10,6 @@ const {
 
 async function sendMedicineNotification() {
   const medications = await getMedicationWithUser();
-
-  let transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_PASSWORD,
-    },
-  });
 
   medications.forEach(async (medication) => {
     const mailTemplate = `
