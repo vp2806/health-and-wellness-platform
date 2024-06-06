@@ -8,6 +8,7 @@ const {
 const { generalResponse } = require("../helpers/response-helper");
 const { config } = require("dotenv");
 config({ path: `.env` });
+let token = null;
 
 async function createToken(req) {
   const tokenId = customId({
@@ -65,14 +66,17 @@ async function createToken(req) {
 
 module.exports = {
   generateToken: async function (req, res, next) {
-    req.token = await createToken(req);
+    token = await createToken(req);
+    res.cookie("token", token, {
+      httpOnly: true,
+    });
     return next();
   },
   sendToken: function (req, res) {
     return generalResponse(
       res,
       {
-        token: req.token,
+        token,
       },
       "User Logged In Successfully",
       true

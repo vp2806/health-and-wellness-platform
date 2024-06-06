@@ -27,6 +27,39 @@ async function registerUser(req, res) {
     }
 
     const { firstName, lastName, email, dob, contactNumber } = req.body;
+
+    let user = await getUser({
+      where: {
+        email,
+      },
+    });
+
+    if (user) {
+      return generalResponse(
+        res,
+        [],
+        "Email is already registered",
+        "error",
+        true
+      );
+    }
+
+    user = await getUser({
+      where: {
+        contact_number: contactNumber,
+      },
+    });
+
+    if (user) {
+      return generalResponse(
+        res,
+        [],
+        "Contact Number is already registered",
+        "error",
+        true
+      );
+    }
+
     const activationCode = generateRandomString(16);
 
     const newUser = await createUser({
@@ -126,16 +159,6 @@ async function authenticateUser(req, res) {
     const errors = validationResult(req);
     let timeDifference = 0;
 
-    if (!errors.isEmpty()) {
-      return generalResponse(
-        res,
-        { status: false, errors: errors.array() },
-        "Invalid user payload",
-        "error",
-        true
-      );
-    }
-
     const user = await getUser({
       where: {
         activation_code: req.params.activateCode,
@@ -163,6 +186,16 @@ async function authenticateUser(req, res) {
         res,
         { success: false },
         "The link is expired.",
+        "error",
+        true
+      );
+    }
+
+    if (!errors.isEmpty()) {
+      return generalResponse(
+        res,
+        { status: false, errors: errors.array() },
+        "Invalid user payload",
         "error",
         true
       );

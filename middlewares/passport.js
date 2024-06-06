@@ -1,15 +1,22 @@
 const passport = require("passport");
 const passportJWT = require("passport-jwt");
 const jwtStrategy = passportJWT.Strategy;
-const extractJwt = passportJWT.ExtractJwt;
 const { config } = require("dotenv");
 config({ path: `.env` });
 const { getUserLogins } = require("../repositories/user-login-repository");
 
+let cookieExtractor = (req) => {
+  let token = null;
+  if (req && req.cookies) {
+    token = req.cookies.token;
+  }
+  return token;
+};
+
 passport.use(
   new jwtStrategy(
     {
-      jwtFromRequest: extractJwt.fromHeader("token"),
+      jwtFromRequest: cookieExtractor,
       secretOrKey: process.env.SECERT_KEY,
     },
     async (jwtPayload, next) => {

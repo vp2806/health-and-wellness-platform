@@ -4,9 +4,13 @@ const { config } = require("dotenv");
 config({ path: `.env` });
 const router = require("./routes/index-route");
 const app = express();
+const cookieParser = require("cookie-parser");
 require("./jobs/medication-notification-job");
 require("./jobs/weekly-report-job");
 
+app.set("view engine", "ejs");
+app.use(cookieParser());
+app.use("/public", express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());

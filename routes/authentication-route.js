@@ -24,6 +24,13 @@ const {
 } = require("../middlewares/user-validation");
 const { generateToken, sendToken } = require("../helpers/token-helper");
 const passport = require("passport");
+const {
+  renderRegisterView,
+  renderActivateAccountView,
+  renderLoginView,
+  renderDashboardView,
+  renderForgotPasswordView,
+} = require("../controllers/render-authentication-controller");
 
 router.post("/register", userValidation, registerUser);
 router.post(
@@ -76,7 +83,7 @@ router.delete(
   "/logout-all-devices",
   passport.authenticate("jwt", {
     session: false,
-    failureRedirect: "/get-users",
+    failureRedirect: "/login",
   }),
   logoutAllDevices
 );
@@ -85,9 +92,17 @@ router.get(
   "/test-route",
   passport.authenticate("jwt", {
     session: false,
-    failureRedirect: "/get-users",
+    failureRedirect: "/login",
   }),
   testFunction
 );
+
+//Front-end Routes
+
+router.get("/register", renderRegisterView);
+router.get("/activate-account/:activateCode", renderActivateAccountView);
+router.get("/login", renderLoginView);
+router.get("/forgot-password", renderForgotPasswordView);
+router.get("/dashboard", renderDashboardView);
 
 module.exports = router;
