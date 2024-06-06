@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class BlacklistToken extends Model {
+  class MedicationReport extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,19 +9,25 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      MedicationReport.belongsTo(models.user, {
+        foreignKey: "user_id",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      });
     }
   }
-  BlacklistToken.init(
+  MedicationReport.init(
     {
-      token: DataTypes.TEXT,
+      user_id: DataTypes.INTEGER,
+      report_url: DataTypes.STRING,
     },
     {
       sequelize,
-      modelName: "blacklist_token",
-      createdAt: "created_at",
-      updatedAt: "updated_at",
+      modelName: "medication_report",
       underscored: true,
+      updatedAt: false,
+      createdAt: "created_at",
     }
   );
-  return BlacklistToken;
+  return MedicationReport;
 };

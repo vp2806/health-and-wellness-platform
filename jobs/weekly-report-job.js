@@ -4,7 +4,7 @@ const {
   getMedicationWeeklyActivity,
 } = require("../repositories/medication-activity-repository");
 const { getUsers } = require("../repositories/authentication-repository");
-const medicationReportQueue = require("../queues/weekly-medication-report-queue");
+const medicineReminderQueue = require("../queues/weekly-medication-report-queue");
 
 async function sendWeeklyReport() {
   const medicationActivities = await getMedicationWeeklyActivity();
@@ -17,11 +17,11 @@ async function sendWeeklyReport() {
       }
     );
 
-    medicationReportQueue.add("report", userWeeklyReportData);
+    medicineReminderQueue.add("report", userWeeklyReportData);
   });
-  console.log("Cron Job executed at", new Date());
+  console.log("Cron Job of weekly report executed at", new Date());
 }
 
-cron.schedule("* * * * *", () => {
+cron.schedule("59 23 * * 0", () => {
   sendWeeklyReport();
 });

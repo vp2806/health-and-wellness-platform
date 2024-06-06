@@ -6,6 +6,9 @@ const { config } = require("dotenv");
 config({ path: `.env` });
 const uploadWeeklyReportToCloud = require("../storage/storage");
 const fs = require("fs");
+const {
+  createMedicationReport,
+} = require("../repositories/medication-report-repository");
 
 const medicationReportQueue = new Queue("reportQueue", {
   connection: {
@@ -36,12 +39,13 @@ const sendReportWorker = new Worker(
         return medicationActivity;
       });
 
-      //Generate Weekly Report in CSV format
-      if (weeklyReportData[0].medication) {
-        fileName = `${Date.now()}-${
-          weeklyReportData[0].medication.user.first_name
-        }-${weeklyReportData[0].medication.user.last_name}-Report.csv`;
+      if (weeklyReportData.length === 0) {
+        return;
       }
+
+      fileName = `${Date.now()}-${
+        weeklyReportData[0].medication.user.first_name
+      }-${weeklyReportData[0].medication.user.last_name}-Report.csv`;
 
       const writer = csvWriter.createObjectCsvWriter({
         path: path.resolve(__dirname, "../uploads", fileName),
@@ -64,7 +68,6 @@ const sendReportWorker = new Worker(
 
       await writer.writeRecords(weeklyReportData);
 
-      //Upload the report to cloud
       const uploadReport = await uploadWeeklyReportToCloud(fileName);
 
       const mailTemplate = `
@@ -74,8 +77,16 @@ const sendReportWorker = new Worker(
                 <title>Weekly Medicine Report</title>
             </head>
             <body>
-                <p>Hello, ${weeklyReportData[0].medication.user.first_name} ${weeklyReportData[0].medication.user.last_name}</p>
-                <p>I hope this email finds you well. Herewith, we've attached the weekly report. Please go through the weekly report.</p>
+                <p>Hello, ${weeklyReportData[0].medication.user.first_name} ${
+        weeklyReportData[0].medication.user.last_name
+      }</p>
+                <p>I hope this email finds you well. Herewith, we've attached the weekly report from <strong>${new Date(
+                  new Date().setDate(new Date().getDate() - 6)
+                )
+                  .toJSON()
+                  .slice(0, 10)} to ${new Date()
+        .toJSON()
+        .slice(0, 10)} </strong> . Please go through the weekly report.</p>
                 <p style="margin-bottom: 0">Regards,</p>
                 <p style="margin-top: 0">Health and Wellness Management Platform</p>
             </body>
@@ -89,7 +100,7 @@ const sendReportWorker = new Worker(
           new Date().setDate(new Date().getDate() - 6)
         )
           .toJSON()
-          .slice(0, 10)} - ${new Date().toJSON().slice(0, 10)}]`,
+          .slice(0, 10)} to ${new Date().toJSON().slice(0, 10)}]`,
         html: mailTemplate,
         attachments: [
           {
@@ -106,13 +117,19 @@ const sendReportWorker = new Worker(
           if (uploadReport) {
             fs.unlinkSync(path.resolve(__dirname, "../uploads", fileName));
           }
+
+          await createMedicationReport({
+            user_id: weeklyReportData[0].medication.user.id,
+            report_url:
+              uploadReport.url ||
+              path.resolve(__dirname, "../uploads", fileName),
+          });
+
           console.log("Email successfully sent!");
         }
       });
-
-      console.log("Job is successfully processed by worker.....");
     } catch (error) {
-      console.error("Error performing an job", error);
+      console.error("Error performing a weekly report job", error);
     }
   },
   {

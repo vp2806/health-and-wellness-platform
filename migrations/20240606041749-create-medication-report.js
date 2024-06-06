@@ -5,7 +5,7 @@ module.exports = {
     try {
       await queryInterface.sequelize.transaction(async (t) => {
         await queryInterface.createTable(
-          "blacklist_tokens",
+          "medication_reports",
           {
             id: {
               allowNull: false,
@@ -13,19 +13,23 @@ module.exports = {
               primaryKey: true,
               type: Sequelize.INTEGER,
             },
-            token: {
+            user_id: {
               allowNull: false,
-              type: Sequelize.TEXT,
+              type: Sequelize.INTEGER,
+              references: {
+                model: "users",
+                key: "id",
+              },
+              onDelete: "CASCADE",
+              onUpdate: "CASCADE",
+            },
+            report_url: {
+              allowNull: false,
+              type: Sequelize.STRING(2048),
             },
             created_at: {
               allowNull: false,
               defaultValue: Sequelize.literal("CURRENT_TIMESTAMP()"),
-              type: Sequelize.DATE,
-            },
-            updated_at: {
-              defaultValue: Sequelize.literal(
-                "NULL ON UPDATE CURRENT_TIMESTAMP()"
-              ),
               type: Sequelize.DATE,
             },
           },
@@ -35,18 +39,18 @@ module.exports = {
         );
       });
     } catch (error) {
-      console.error("Failed to create blacklist_tokens table", error);
+      console.error("Failed to create medication_reports table", error);
     }
   },
   async down(queryInterface, Sequelize) {
     try {
       await queryInterface.sequelize.transaction(async (t) => {
-        await queryInterface.dropTable("blacklist_tokens", {
+        await queryInterface.dropTable("medication_reports", {
           transaction: t,
         });
       });
     } catch (error) {
-      console.error("Failed to down blacklist_tokens table", error);
+      console.error("Failed to down medication_reports table", error);
     }
   },
 };

@@ -12,8 +12,8 @@ async function createUserLogin(userLoginPayLoad) {
 }
 async function getUserLogins(options) {
   try {
-    const getUserLogins = await user_login.findAll(options);
-    return getUserLogins;
+    const getAllUserLogins = await user_login.findAll(options);
+    return getAllUserLogins;
   } catch (error) {
     console.error("Error getting user logins.", error);
     throw error;

@@ -16,12 +16,15 @@ async function uploadWeeklyReportToCloud(fileName) {
       "../uploads",
       fileName
     );
-    await cloudinary.uploader.upload(localWeeklyReportPath, {
-      public_id: `health-and-wealth-management-platform/${localWeeklyReportPath}`,
-      resource_type: "auto",
-      folder: "health-and-wellness-management",
-    });
-    return true;
+    const uploadReport = await cloudinary.uploader.upload(
+      localWeeklyReportPath,
+      {
+        public_id: `health-and-wealth-management-platform/${fileName}`,
+        resource_type: "auto",
+        folder: "health-and-wellness-management",
+      }
+    );
+    return uploadReport;
   } catch (error) {
     console.error("Error Uploading an report to cloud", error);
     return false;
