@@ -1,0 +1,42 @@
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-dark">
+  <link rel="stylesheet" type="text/css" href="/css/custom.css" />
+  <div class="container-fluid">
+    <a
+      class="navbar-brand"
+      href="/dashboard"
+      style="color: white; padding-left: 10px; font-size: xx-large"
+      >iCare</a
+    >
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+      <div class="dropdown ms-2" id="profile">
+        <a
+          href="#"
+          class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
+          id="dropdownUser1"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <img
+            src="/public/assets/images/user.png"
+            alt="Profile Picture"
+            width="45"
+            height="45"
+            class="rounded-circle me-2"
+            id="profilePicture"
+          />
+          <strong class="fs-5 text-light"></strong>
+        </a>
+        <ul
+          class="dropdown-menu dropdown-menu-dark text-small"
+          aria-labelledby="dropdownUser1" id="customerDropdown" style="left:-248px;"
+        >
+          <li><a class="dropdown-item" href="/add-medicine">Add Medicine</a></li>
+          <li><div class="dropdown-item" role="button" onclick="logoutUser()">Logout</div></li>
+          <li><div class="dropdown-item" role="button" onclick="logoutAllDevices()">Logout me out from all devices</div></li>
+          <li><div class="dropdown-item" role="button" onclick="logoutAllDevicesExceptCurrent()">Logout from all devices except current</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>

@@ -20,7 +20,7 @@
       <div class="mt-5 card px-5 py-4">
         <h2 class="title mb-2 fs-1 fw-bold">iCare</h2>
         <p class="fs-6">Sign In to your account!</p>
-        <form id="loginUser">
+        <form id="loginUser" onkeydown="loginUser(event)">
           <div class="form-floating mb-3" id="emailComp">
             <input
               type="email"
@@ -45,7 +45,7 @@
             <a href="/forgot-password">Forgot Password</a>
           </div>
 
-          <div class="btn btn-primary w-100 mt-3" onclick="loginUser()">
+          <div class="btn btn-primary w-100 mt-3" onclick="loginUser(null)">
             Login
           </div>
           <div class="text-center mt-3">

@@ -31,25 +31,25 @@ async function addMedication(req, res) {
         true
       );
     }
+    console.log(req.body);
+    // for (let key in req.body) {
+    //   if (key === "time") {
+    //     req.body[key] = new Date(req.body.startDate + " " + req.body.time);
+    //   }
 
-    for (let key in req.body) {
-      if (key === "time") {
-        req.body[key] = new Date(req.body.startDate + " " + req.body.time);
-      }
+    //   if (fields[key]) {
+    //     medicationPayLoad[fields[key]] = req.body[key];
+    //   } else {
+    //     medicationPayLoad[key] = req.body[key];
+    //   }
+    // }
 
-      if (fields[key]) {
-        medicationPayLoad[fields[key]] = req.body[key];
-      } else {
-        medicationPayLoad[key] = req.body[key];
-      }
-    }
+    // medicationPayLoad["user_id"] = req.user.id;
 
-    medicationPayLoad["user_id"] = req.user.id;
-
-    const newMedication = await createMedication(medicationPayLoad);
+    // const newMedication = await createMedication(medicationPayLoad);
     return generalResponse(
       res,
-      newMedication,
+      [],
       "Inserted new medication successfully",
       true
     );

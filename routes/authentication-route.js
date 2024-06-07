@@ -56,7 +56,7 @@ router.delete(
   "/logout",
   passport.authenticate("jwt", {
     session: false,
-    failureRedirect: "/get-users",
+    failureRedirect: "/login",
   }),
   logoutUser
 );
@@ -65,7 +65,7 @@ router.get(
   "/user-logged-devices",
   passport.authenticate("jwt", {
     session: false,
-    failureRedirect: "/get-users",
+    failureRedirect: "/login",
   }),
   getAllDevices
 );
@@ -74,7 +74,7 @@ router.delete(
   "/logout-all-device-except-current",
   passport.authenticate("jwt", {
     session: false,
-    failureRedirect: "/get-users",
+    failureRedirect: "/login",
   }),
   logoutAllDevicesExceptCurrent
 );
@@ -98,11 +98,18 @@ router.get(
 );
 
 //Front-end Routes
-
 router.get("/register", renderRegisterView);
 router.get("/activate-account/:activateCode", renderActivateAccountView);
 router.get("/login", renderLoginView);
 router.get("/forgot-password", renderForgotPasswordView);
-router.get("/dashboard", renderDashboardView);
+router.get("/reset-password/:activateCode", renderActivateAccountView);
+router.get(
+  "/dashboard",
+  passport.authenticate("jwt", {
+    session: false,
+    failureRedirect: "/login",
+  }),
+  renderDashboardView
+);
 
 module.exports = router;

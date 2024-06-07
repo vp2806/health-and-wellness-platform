@@ -360,6 +360,7 @@ async function logoutUser(req, res) {
       }
     );
 
+    res.clearCookie("token");
     return generalResponse(
       res,
       {

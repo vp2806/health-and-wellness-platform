@@ -103,6 +103,7 @@ async function logoutAllDevices(req, res) {
       );
     });
 
+    res.clearCookie("token");
     return generalResponse(
       res,
       { success: true },

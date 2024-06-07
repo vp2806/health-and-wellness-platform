@@ -6,15 +6,17 @@ const {
   modifyMedication,
   removeMedication,
   markMedicationActivity,
-  getUserMedicationActivities,
 } = require("../controllers/medication-controller");
+const {
+  renderAddMedicationView,
+} = require("../controllers/render-medication-controller");
 const passport = require("passport");
 
 router.post(
   "/add-medication",
   passport.authenticate("jwt", {
     session: false,
-    failureRedirect: "/get-users",
+    failureRedirect: "/login",
   }),
   addMedication
 );
@@ -23,7 +25,7 @@ router.get(
   "/get-medications",
   passport.authenticate("jwt", {
     session: false,
-    failureRedirect: "/get-users",
+    failureRedirect: "/login",
   }),
   getUserMedications
 );
@@ -32,7 +34,7 @@ router.put(
   "/update-medication/:id",
   passport.authenticate("jwt", {
     session: false,
-    failureRedirect: "/get-users",
+    failureRedirect: "/login",
   }),
   modifyMedication
 );
@@ -41,7 +43,7 @@ router.delete(
   "/delete-medication/:id",
   passport.authenticate("jwt", {
     session: false,
-    failureRedirect: "/get-users",
+    failureRedirect: "/login",
   }),
   removeMedication
 );
@@ -50,9 +52,19 @@ router.get(
   "/mark-medicine-as-done",
   passport.authenticate("jwt", {
     session: false,
-    failureRedirect: "/get-users",
+    failureRedirect: "/login",
   }),
   markMedicationActivity
+);
+
+//Front-end Routes
+router.get(
+  "/add-medicine",
+  passport.authenticate("jwt", {
+    session: false,
+    failureRedirect: "/login",
+  }),
+  renderAddMedicationView
 );
 
 module.exports = router;

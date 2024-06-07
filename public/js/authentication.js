@@ -2,112 +2,152 @@ let error = "";
 let errorElements = document.getElementsByClassName("text-danger");
 const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
-const registerUser = async () => {
-  const registerForm = document.getElementById("registerUser");
-  const isValidData = checkRegisterValidation(registerForm);
-  if (isValidData) {
-    let response = await callApi("/register", registerForm, "post");
-    if (response.response_type === "error") {
-      return Swal.fire({
-        icon: "error",
-        title: response.message,
-        text: "Something went wrong!",
-      });
-    }
+const registerUser = async (event) => {
+  if (!event || event.key === "Enter") {
+    const registerForm = document.getElementById("registerUser");
+    const isValidData = checkRegisterValidation(registerForm);
+    if (isValidData) {
+      let response = await callApi("/register", registerForm, "post");
+      if (response.response_type === "error") {
+        return Swal.fire({
+          icon: "error",
+          title: response.message,
+          text: "Something went wrong!",
+        });
+      }
 
-    if (response.response_type) {
-      registerForm.reset();
-      return Swal.fire({
-        title: "Good job!",
-        text: "You have Registered Successfully!",
-        icon: "success",
-      });
-    }
-  }
-};
-
-const setPassword = async () => {
-  const passwordForm = document.getElementById("setPassword");
-  const isValidData = checkPasswordValidation(passwordForm);
-  if (isValidData) {
-    let response = await callApi(
-      `/activate-account/${
-        window.location.pathname.split("/activate-account/")[1]
-      }`,
-      passwordForm,
-      "post"
-    );
-
-    if (response.response_type === "error") {
-      return Swal.fire({
-        title: response.message,
-        icon: "error",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "Ok!",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.assign("/register");
-        }
-      });
-    }
-
-    if (response.response_type) {
-      return Swal.fire({
-        title: "Good job!",
-        text: "Password Set Successfully!",
-        icon: "success",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "Login",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.assign("/register");
-        }
-      });
+      if (response.response_type) {
+        registerForm.reset();
+        return Swal.fire({
+          title: "Good job!",
+          text: "You have Registered Successfully!",
+          icon: "success",
+        });
+      }
     }
   }
 };
 
-const loginUser = async () => {
-  const loginForm = document.getElementById("loginUser");
-  const isValidData = checkLoginValidation(loginForm);
-  if (isValidData) {
-    let response = await callApi("/login", loginForm, "post");
+const setPassword = async (event) => {
+  if (!event || event.key === "Enter") {
+    const passwordForm = document.getElementById("setPassword");
+    const isValidData = checkPasswordValidation(passwordForm);
+    if (isValidData) {
+      let response = await callApi(
+        `/activate-account/${
+          window.location.pathname.split("/activate-account/")[1] ||
+          window.location.pathname.split("/reset-password/")[1]
+        }`,
+        passwordForm,
+        "post"
+      );
 
-    if (response.response_type === "error") {
-      return Swal.fire({
-        icon: "error",
-        title: response.message,
-        text: "Something went wrong!",
-      });
-    }
+      if (response.response_type === "error") {
+        return Swal.fire({
+          title: response.message,
+          icon: "error",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Ok!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.assign("/register");
+          }
+        });
+      }
 
-    if (response.response_type) {
-      return Swal.fire({
-        title: "Good job!",
-        text: "Logged In Successfully!",
-        icon: "success",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "Ok",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.assign("/dashboard");
-        }
-      });
+      if (response.response_type) {
+        return Swal.fire({
+          title: "Good job!",
+          text: "Password Set Successfully!",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Login",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.assign("/login");
+          }
+        });
+      }
     }
   }
 };
 
-const verifyEmail = async () => {
-  const email = document.getElementById("email");
-  const isValidData = checkEmailValidation(email);
-  if (isValidData) {
+const loginUser = async (event) => {
+  if (!event || event.key === "Enter") {
+    const loginForm = document.getElementById("loginUser");
+    const isValidData = checkLoginValidation(loginForm);
+    if (isValidData) {
+      let response = await callApi("/login", loginForm, "post");
+
+      if (response.response_type === "error") {
+        return Swal.fire({
+          icon: "error",
+          title: response.message,
+          text: "Something went wrong!",
+        });
+      }
+
+      if (response.response_type) {
+        return Swal.fire({
+          title: "Good job!",
+          text: "Logged In Successfully!",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Ok",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.assign("/dashboard");
+          }
+        });
+      }
+    }
+  }
+};
+
+const verifyEmail = async (event) => {
+  if (!event || event.key === "Enter") {
+    const forgotPasswordForm = document.getElementById("forgotPassword");
+    const email = document.getElementById("email");
+    const isValidData = checkEmailValidation(email);
+    if (isValidData) {
+      let response = await callApi(
+        "/reset-password",
+        forgotPasswordForm,
+        "post"
+      );
+
+      if (response.response_type === "error") {
+        return Swal.fire({
+          icon: "error",
+          title: response.message,
+          text: "Something went wrong!",
+        });
+      }
+
+      if (response.response_type) {
+        return Swal.fire({
+          title: "Good job!",
+          text: "Email Verified Successfully & Now Reset the password!",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Ok",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.assign(
+              `/reset-password/${response.data.activationCode}`
+            );
+          }
+        });
+      }
+    }
   }
 };
 
 const isLinkValid = async () => {
   let response = await callApi(
     `/activate-account/${
-      window.location.pathname.split("/activate-account/")[1]
+      window.location.pathname.split("/activate-account/")[1] ||
+      window.location.pathname.split("/reset-password/")[1]
     }`,
     null,
     "post"
@@ -123,6 +163,87 @@ const isLinkValid = async () => {
       if (result.isConfirmed) {
         window.location.assign("/register");
       }
+    });
+  }
+};
+
+const logoutUser = async () => {
+  let response = await fetch("/logout", {
+    method: "delete",
+  });
+
+  response = await response.json();
+  if (response.response_type === "error") {
+    return Swal.fire({
+      icon: "error",
+      title: response.message,
+      text: "Something went wrong!",
+    });
+  }
+
+  if (response.response_type) {
+    return Swal.fire({
+      title: "Good job!",
+      text: "Logged Out Successfully!",
+      icon: "success",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Ok",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.assign("/login");
+      }
+    });
+  }
+};
+
+const logoutAllDevices = async () => {
+  let response = await fetch("/logout-all-devices", {
+    method: "delete",
+  });
+
+  response = await response.json();
+  if (response.response_type === "error") {
+    return Swal.fire({
+      icon: "error",
+      title: response.message,
+      text: "Something went wrong!",
+    });
+  }
+
+  if (response.response_type) {
+    return Swal.fire({
+      title: "Good job!",
+      text: "Logged Out from All Devices Successfully!",
+      icon: "success",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Ok",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.assign("/login");
+      }
+    });
+  }
+};
+
+const logoutAllDevicesExceptCurrent = async () => {
+  let response = await fetch("/logout-all-device-except-current", {
+    method: "delete",
+  });
+
+  response = await response.json();
+  if (response.response_type === "error") {
+    return Swal.fire({
+      icon: "error",
+      title: response.message,
+      text: "Something went wrong!",
+    });
+  }
+
+  if (response.response_type) {
+    return Swal.fire({
+      title: "Good job!",
+      text: "Logged Out from All Devices except current Successfully!",
+      icon: "success",
     });
   }
 };
@@ -219,6 +340,7 @@ const checkRegisterValidation = (registerForm) => {
 };
 
 const checkPasswordValidation = (passwordForm) => {
+  error = "";
   if (errorElements.length > 0) {
     for (let i = errorElements.length; i > 0; i--) {
       errorElements[i - 1].remove();
@@ -270,6 +392,7 @@ const checkPasswordValidation = (passwordForm) => {
 };
 
 const checkLoginValidation = (loginForm) => {
+  error = "";
   if (errorElements.length > 0) {
     for (let i = errorElements.length; i > 0; i--) {
       errorElements[i - 1].remove();
@@ -319,9 +442,17 @@ const checkLoginValidation = (loginForm) => {
   }
   return false;
 };
+
 const checkEmailValidation = (email) => {
+  error = "";
+  for (let i = errorElements.length; i > 0; i--) {
+    errorElements[i - 1].remove();
+  }
+
+  email.style.border = "";
+
   if (email.value.trim() === "") {
-    document.getElementById(`${email.id}`).style.border = "1px solid red";
+    email.style.border = "1px solid red";
     error += " Fields are Complusory ";
   }
 
@@ -336,6 +467,11 @@ const checkEmailValidation = (email) => {
   ) {
     generateErrorElement("Please enter a valid email", email.name);
   }
+
+  if (error === "" && errorElements.length === 0) {
+    return true;
+  }
+  return false;
 };
 
 const generateErrorElement = (text, elementName) => {
