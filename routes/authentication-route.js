@@ -98,6 +98,7 @@ router.get(
 );
 
 //Front-end Routes
+router.get("/", renderLoginView);
 router.get("/register", renderRegisterView);
 router.get("/activate-account/:activateCode", renderActivateAccountView);
 router.get("/login", renderLoginView);

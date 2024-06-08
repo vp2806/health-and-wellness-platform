@@ -31,25 +31,25 @@ async function addMedication(req, res) {
         true
       );
     }
-    console.log(req.body);
-    // for (let key in req.body) {
-    //   if (key === "time") {
-    //     req.body[key] = new Date(req.body.startDate + " " + req.body.time);
-    //   }
 
-    //   if (fields[key]) {
-    //     medicationPayLoad[fields[key]] = req.body[key];
-    //   } else {
-    //     medicationPayLoad[key] = req.body[key];
-    //   }
-    // }
+    for (let key in req.body) {
+      if (key === "time") {
+        req.body[key] = new Date(req.body.startDate + " " + req.body.time);
+      }
 
-    // medicationPayLoad["user_id"] = req.user.id;
+      if (fields[key]) {
+        medicationPayLoad[fields[key]] = req.body[key];
+      } else {
+        medicationPayLoad[key] = req.body[key];
+      }
+    }
 
-    // const newMedication = await createMedication(medicationPayLoad);
+    medicationPayLoad["user_id"] = req.user.id;
+
+    const newMedication = await createMedication(medicationPayLoad);
     return generalResponse(
       res,
-      [],
+      newMedication,
       "Inserted new medication successfully",
       true
     );
@@ -71,8 +71,29 @@ async function getUserMedications(req, res) {
       where: {
         user_id: req.user.id,
       },
+      attributes: [
+        "medication_name",
+        "description",
+        "day",
+        "time",
+        "start_date",
+        "end_date",
+      ],
     });
-    return generalResponse(res, medications, "Fetched Medications", true);
+
+    const data = [];
+    medications.forEach((medication) => {
+      const medicine = {
+        "Medicine Name": medication.medication_name,
+        Description: medication.description,
+        Day: medication.day,
+        "Start Date": medication.start_date,
+        "End Date": medication.end_date,
+        Time: medication.time,
+      };
+      data.push(medicine);
+    });
+    return generalResponse(res, data, "Fetched Medications", true);
   } catch (error) {
     console.error("Error fetching medications", error);
     return generalResponse(

@@ -17,22 +17,16 @@
   </head>
   <body>
     <%- include("partials/navbar") %>
-    <div class="container mt-5 w-50">
+    <div class="container mt-5">
       <h1 class="text-center text-success mb-3">Add Medicine</h1>
       <div class="mt-5 card px-5 py-4">
-        <form
-          id="addMedicine"
-          class="row g-3"
-          method="post"
-          action="/add-medication"
-          onsubmit="return checkMedicineValidation()"
-        >
+        <form id="addMedicine" class="row g-3" onkeypress="addMedicine(event)">
           <div class="col-6">
             <label for="medicationAddType" class="form-label"
               >Medication Add Type
             </label>
             <select
-              class="form-select"
+              class="form-select require"
               id="medicationAddType"
               name="medicationAddType"
               onchange="handleMedicationType(this)"
@@ -76,7 +70,9 @@
               />
             </div>
             <div class="col-md-6" id="timeComp">
-              <label for="time" class="form-label">Time *</label>
+              <label for="time" class="form-label"
+                >Time * [Interval - 30 mins]
+              </label>
               <input
                 type="text"
                 class="form-control require"
@@ -102,7 +98,7 @@
             </div>
             <div class="col-md-2 d-none" id="dayComp">
               <label for="day" class="form-label">Day *</label>
-              <select class="form-select" id="day">
+              <select class="form-select" id="day" name="day">
                 <option value="0">Sunday</option>
                 <option value="1">Monday</option>
                 <option value="2">Tuesday</option>
@@ -113,7 +109,9 @@
               </select>
             </div>
             <div class="col-md-3" id="time2Comp">
-              <label for="time2" class="form-label">Time *</label>
+              <label for="time2" class="form-label"
+                >Time * [Interval - 30 mins]</label
+              >
               <input
                 type="text"
                 class="form-control"
@@ -143,11 +141,12 @@
           </div>
 
           <div class="col-12">
-            <input
-              type="submit"
-              value="Add Medicine"
+            <div
               class="btn btn-primary w-25 mt-2 d-flex mx-auto justify-content-center text-center"
-            />
+              onclick="addMedicine(null)"
+            >
+              Add Medicine
+            </div>
           </div>
         </form>
       </div>

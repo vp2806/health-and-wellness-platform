@@ -484,7 +484,7 @@ const generateErrorElement = (text, elementName) => {
   spanElement.classList.add("text-danger");
 };
 
-const callApi = async (url, formElement, method) => {
+const callApi = async (url, formElement, method, payLoad) => {
   let data = new URLSearchParams();
   if (formElement) {
     Array.from(formElement.elements).forEach((element) => {
