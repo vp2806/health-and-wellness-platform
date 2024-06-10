@@ -54,17 +54,12 @@ async function getMedicationWithUser() {
       where: {
         [Op.or]: [
           {
-            medication_add_type_id: 1,
-          },
-          {
-            medication_add_type_id: 2,
-          },
-        ],
-        [Op.or]: [
-          {
             [Op.and]: [
               {
-                start_date: new Date().toJSON().slice(0, 10),
+                medication_add_type_id: 1,
+              },
+              {
+                start_date: new Date(),
               },
               {
                 end_date: null,
@@ -73,7 +68,11 @@ async function getMedicationWithUser() {
           },
           {
             [Op.and]: [
+              { medication_add_type_id: 2 },
               {
+                start_date: {
+                  [Op.lte]: new Date(),
+                },
                 end_date: {
                   [Op.gte]: new Date(),
                 },
@@ -85,6 +84,7 @@ async function getMedicationWithUser() {
           },
           {
             [Op.and]: [
+              { medication_add_type_id: 3 },
               {
                 end_date: {
                   [Op.gte]: new Date(),
@@ -96,7 +96,6 @@ async function getMedicationWithUser() {
             ],
           },
         ],
-        time: new Date().toJSON().slice(11, 19),
       },
     });
     return medications;

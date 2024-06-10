@@ -6,10 +6,6 @@ const {
   updateMedication,
   deleteMedication,
 } = require("../repositories/medication-repository");
-const {
-  getMedicationActivities,
-  updateMedicationActivity,
-} = require("../repositories/medication-activity-repository");
 
 const fields = {
   medicationAddType: "medication_add_type_id",
@@ -33,13 +29,13 @@ async function addMedication(req, res) {
     }
 
     for (let key in req.body) {
-      if (key === "time") {
-        req.body[key] = new Date(req.body.startDate + " " + req.body.time);
-      }
-
-      if (fields[key]) {
+      if (key === "startDate" || key === "endDate") {
+        medicationPayLoad[fields[key]] = new Date(
+          new Date(req.body[key] + " " + req.body.time)
+        );
+      } else if (key !== "time" && fields[key]) {
         medicationPayLoad[fields[key]] = req.body[key];
-      } else {
+      } else if (key !== "time") {
         medicationPayLoad[key] = req.body[key];
       }
     }
@@ -75,7 +71,6 @@ async function getUserMedications(req, res) {
         "medication_name",
         "description",
         "day",
-        "time",
         "start_date",
         "end_date",
       ],
@@ -163,62 +158,9 @@ async function removeMedication(req, res) {
   }
 }
 
-async function markMedicationActivity(req, res) {
-  try {
-    const medication = await getMedicationActivities({
-      id: req.query.medicine,
-      userId: req.user.id,
-    });
-
-    if (medication.length === 0) {
-      return generalResponse(res, [], "Not Authorized", true, true, 401);
-    }
-
-    if (medication.length > 0 && medication[0].done_at) {
-      return generalResponse(
-        res,
-        [],
-        "You have already mark the medicine done",
-        true,
-        true
-      );
-    }
-
-    const markingMedicationActivity = await updateMedicationActivity(
-      {
-        done_at: new Date(),
-      },
-      {
-        where: {
-          medication_id: req.query.medicine,
-          notification_date: req.query.current,
-        },
-      }
-    );
-
-    return generalResponse(
-      res,
-      markingMedicationActivity,
-      "The medicine is marked as done.",
-      true,
-      true
-    );
-  } catch (error) {
-    console.error("Error marking medicine activity", error);
-    return generalResponse(
-      res,
-      { success: false },
-      "Something went wrong while marking the medicine as done.",
-      "error",
-      true
-    );
-  }
-}
-
 module.exports = {
   addMedication,
   getUserMedications,
   modifyMedication,
   removeMedication,
-  markMedicationActivity,
 };

@@ -17,6 +17,7 @@ const sendMedicineReminderWorker = new Worker(
   "reminderQueue",
   async (job) => {
     try {
+      console.log(job.data, "data");
       const mailTemplate = `
             <!DOCTYPE html>
             <html>
@@ -29,12 +30,12 @@ const sendMedicineReminderWorker = new Worker(
       }</p>
                 <p>I hope this email finds you well. This is the reminder of <strong>${
                   job.data.medication_name
-                }</strong> medicine at <strong>${
-        job.data.time
-      } [UTC TIME +00:00 24Hr Format]</strong>. Please click on the <a href="http://localhost:5000/mark-medicine-as-done?medicine=${
+                }</strong> medicine at <strong>${job.data.start_date
+        .split(" ")
+        .pop()} </strong>. Please click on the <a href="http://localhost:5000/mark-medicine-as-done?medicine=${
         job.data.id
       }&current=${new Date()
-        .toJSON()
+        .toISOString()
         .slice(0, 10)}">Mark as Done</a> to get it done.</p>
                 <p style="margin-bottom: 0">Regards,</p>
                 <p style="margin-top: 0">Health and Wellness Management Platform</p>
@@ -56,7 +57,7 @@ const sendMedicineReminderWorker = new Worker(
           console.log("Email successfully sent!");
           await createMedicationActivity({
             medication_id: job.data.id,
-            notification_date: new Date().toJSON().slice(0, 10),
+            notification_timestamp: new Date(),
           });
         }
       });

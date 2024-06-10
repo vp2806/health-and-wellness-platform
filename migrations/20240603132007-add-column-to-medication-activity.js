@@ -6,15 +6,20 @@ module.exports = {
       await queryInterface.sequelize.transaction(async (t) => {
         await queryInterface.addColumn(
           "medication_activities",
-          "notification_date",
+          "notification_timestamp",
           {
             allowNull: false,
-            type: Sequelize.DATEONLY,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal("CURRENT_TIMESTAMP()"),
           },
           {
             transaction: t,
           }
         );
+        await queryInterface.changeColumn("medication_activities", "done_at", {
+          type: Sequelize.DATE,
+          defaultValue: Sequelize.literal("NULL ON UPDATE CURRENT_TIMESTAMP()"),
+        });
       });
     } catch (error) {
       console.error(
@@ -32,6 +37,12 @@ module.exports = {
           {
             transaction: t,
           }
+        );
+
+        await queryInterface.changeColumn(
+          "medication_activities",
+          "done_at",
+          {}
         );
       });
     } catch (error) {

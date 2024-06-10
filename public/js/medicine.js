@@ -158,10 +158,17 @@ const addMedicine = async (event) => {
 
       if (response.response_type) {
         medicineForm.reset();
+
         return Swal.fire({
           title: "Good job!",
           text: "Medicine added Successfully!",
           icon: "success",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Ok",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.assign("/dashboard");
+          }
         });
       }
     }
@@ -194,20 +201,25 @@ const getAllMedicines = async () => {
         tableHeader += `<th>${key}</th>`;
       }
     }
-    tableHeader += "</tr></thead>";
+    tableHeader += "<th>Time</th></tr></thead>";
 
     response.data.forEach((medicine) => {
       tableBody += "<tr>";
       for (const key in medicine) {
-        if (medicine[key] && key !== "Day") {
-          tableBody += `<td>${medicine[key]}</td>`;
-        } else if (key === "Day" && medicine[key]) {
+        if (key === "Day" && medicine[key]) {
           tableBody += `<td>${days[medicine[key]]}</td>`;
+        } else if (
+          (key === "Start Date" || key === "End Date") &&
+          medicine[key]
+        ) {
+          tableBody += `<td>${medicine[key].split(" ")[0]}</td>`;
+        } else if (medicine[key]) {
+          tableBody += `<td>${medicine[key]}</td>`;
         } else {
           tableBody += "<td>-</td>";
         }
       }
-      tableBody += "</tr>";
+      tableBody += `<td>${medicine["Start Date"].split(" ").pop()}</td></tr>`;
     });
 
     tableBody += "</tbody>";

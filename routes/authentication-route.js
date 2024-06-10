@@ -30,6 +30,7 @@ const {
   renderLoginView,
   renderDashboardView,
   renderForgotPasswordView,
+  renderProfileView,
 } = require("../controllers/render-authentication-controller");
 
 router.post("/register", userValidation, registerUser);
@@ -111,6 +112,14 @@ router.get(
     failureRedirect: "/login",
   }),
   renderDashboardView
+);
+router.get(
+  "/profile",
+  passport.authenticate("jwt", {
+    session: false,
+    failureRedirect: "/login",
+  }),
+  renderProfileView
 );
 
 module.exports = router;

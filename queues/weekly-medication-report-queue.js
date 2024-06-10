@@ -80,13 +80,13 @@ const sendReportWorker = new Worker(
                 <p>Hello, ${weeklyReportData[0].medication.user.first_name} ${
         weeklyReportData[0].medication.user.last_name
       }</p>
-                <p>I hope this email finds you well. Herewith, we've attached the weekly report from <strong>${new Date(
-                  new Date().setDate(new Date().getDate() - 6)
-                )
-                  .toJSON()
-                  .slice(0, 10)} to ${new Date()
-        .toJSON()
-        .slice(0, 10)} </strong> . Please go through the weekly report.</p>
+                <p>I hope this email finds you well. Herewith, we've attached the weekly report from <strong>${
+                  new Date(new Date().setDate(new Date().getDate() - 6))
+                    .toISOString()
+                    .split(" ")[0]
+                } to ${
+        new Date().toISOString().split(" ")[0]
+      } </strong> . Please go through the weekly report.</p>
                 <p style="margin-bottom: 0">Regards,</p>
                 <p style="margin-top: 0">Health and Wellness Management Platform</p>
             </body>
@@ -96,11 +96,11 @@ const sendReportWorker = new Worker(
       let messageOptions = {
         from: process.env.GMAIL_USER,
         to: weeklyReportData[0].medication.user.email,
-        subject: `Weekly Medicine Report [ ${new Date(
-          new Date().setDate(new Date().getDate() - 6)
-        )
-          .toJSON()
-          .slice(0, 10)} to ${new Date().toJSON().slice(0, 10)}]`,
+        subject: `Weekly Medicine Report [ ${
+          new Date(new Date().setDate(new Date().getDate() - 6))
+            .toISOString()
+            .split(" ")[0]
+        } to ${new Date().toISOString().split(" ")[0]}]`,
         html: mailTemplate,
         attachments: [
           {

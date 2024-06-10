@@ -29,9 +29,8 @@ module.exports = (sequelize, DataTypes) => {
       medication_name: DataTypes.STRING(50),
       description: DataTypes.STRING,
       day: DataTypes.TINYINT,
-      time: DataTypes.TIME,
-      start_date: DataTypes.DATEONLY,
-      end_date: DataTypes.DATEONLY,
+      start_date: DataTypes.DATE,
+      end_date: DataTypes.DATE,
     },
     {
       sequelize,

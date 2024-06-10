@@ -20,7 +20,7 @@ const registerUser = async (event) => {
         registerForm.reset();
         return Swal.fire({
           title: "Good job!",
-          text: "You have Registered Successfully!",
+          text: `You have Registered Successfully! Please copy this url http://localhost:5000/activate-account/${response.data.activation_code} and paste to new tab to set Password`,
           icon: "success",
         });
       }
@@ -87,19 +87,7 @@ const loginUser = async (event) => {
         });
       }
 
-      if (response.response_type) {
-        return Swal.fire({
-          title: "Good job!",
-          text: "Logged In Successfully!",
-          icon: "success",
-          confirmButtonColor: "#3085d6",
-          confirmButtonText: "Ok",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.assign("/dashboard");
-          }
-        });
-      }
+      window.location.assign("/dashboard");
     }
   }
 };

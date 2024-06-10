@@ -8,12 +8,15 @@ module.exports = {
         await queryInterface.bulkInsert("medication_add_types", [
           {
             type: "One Time",
+            created_at: new Date(),
           },
           {
             type: "Daily",
+            created_at: new Date(),
           },
           {
             type: "Weekly",
+            created_at: new Date(),
           },
         ]);
       });

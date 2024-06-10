@@ -44,16 +44,12 @@ module.exports = {
             day: {
               type: Sequelize.TINYINT,
             },
-            time: {
-              allowNull: false,
-              type: Sequelize.TIME,
-            },
             start_date: {
               allowNull: false,
-              type: Sequelize.DATEONLY,
+              type: Sequelize.DATE,
             },
             end_date: {
-              type: Sequelize.DATEONLY,
+              type: Sequelize.DATE,
             },
             created_at: {
               allowNull: false,

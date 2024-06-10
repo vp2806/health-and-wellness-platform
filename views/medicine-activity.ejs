@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iCare | Medicine Activity</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.11.1/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      const responseType = "<%= responseType %>";
+      const message = "<%= message %>";
+      console.log(responseType, "res");
+      console.log(message, "message");
+      if (responseType === "error") {
+        Swal.fire({
+          icon: "error",
+          title: message,
+          text: "Something went wrong!",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Ok",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.assign("/dashboard");
+          }
+        });
+      }
+
+      if (responseType === "sucess") {
+        Swal.fire({
+          title: "Good job!",
+          text: message,
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Ok",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.assign("/dashboard");
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -14,6 +14,20 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD,
   {
     dialect: "mysql",
+    define: {
+      underscored: true,
+    },
+    dialectOptions: {
+      dateStrings: true,
+      typeCast: function (field, next) {
+        // for reading from database
+        if (field.type === "DATETIME") {
+          return field.string();
+        }
+        return next();
+      },
+    },
+    timezone: "+05:30",
   }
 );
 

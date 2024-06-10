@@ -5,12 +5,15 @@ const {
   getUserMedications,
   modifyMedication,
   removeMedication,
-  markMedicationActivity,
 } = require("../controllers/medication-controller");
 const {
   renderAddMedicationView,
+  renderMedicationActivityView,
 } = require("../controllers/render-medication-controller");
 const passport = require("passport");
+const {
+  medicationValidation,
+} = require("../middlewares/medication-validation");
 
 router.post(
   "/add-medication",
@@ -18,6 +21,7 @@ router.post(
     session: false,
     failureRedirect: "/login",
   }),
+  medicationValidation,
   addMedication
 );
 
@@ -54,7 +58,7 @@ router.get(
     session: false,
     failureRedirect: "/login",
   }),
-  markMedicationActivity
+  renderMedicationActivityView
 );
 
 //Front-end Routes

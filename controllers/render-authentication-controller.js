@@ -29,11 +29,19 @@ async function renderDashboardView(req, res) {
     console.error("Error rendering the login view");
   }
 }
+
 async function renderForgotPasswordView(req, res) {
   try {
     return res.render("forgot-password");
   } catch (error) {
     console.error("Error rendering the login view");
+  }
+}
+async function renderProfileView(req, res) {
+  try {
+    return res.render("profile");
+  } catch (error) {
+    console.error("Error rendering the profile view");
   }
 }
 
@@ -43,4 +51,5 @@ module.exports = {
   renderLoginView,
   renderDashboardView,
   renderForgotPasswordView,
+  renderProfileView,
 };
