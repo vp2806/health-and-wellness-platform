@@ -30,8 +30,6 @@ async function renderMedicationActivityView(req, res) {
       });
     }
 
-    console.log(medication, "medication.............");
-
     if (medication.length > 0 && medication[0].done_at) {
       return res.render("medicine-activity", {
         data: [],
@@ -40,19 +38,18 @@ async function renderMedicationActivityView(req, res) {
       });
     }
 
-    await updateMedicationActivity(
+    const update = await updateMedicationActivity(
       {
         done_at: new Date(),
       },
       {
         where: {
           medication_id: req.query.medicine,
-          notification_timestamp: {
-            [Op.lte]: req.query.current,
-          },
+          notification_timestamp: medication[0].notification_timestamp,
         },
       }
     );
+    console.log(update);
 
     return res.render("medicine-activity", {
       data: [],

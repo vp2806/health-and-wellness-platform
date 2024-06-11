@@ -17,7 +17,6 @@ const sendMedicineReminderWorker = new Worker(
   "reminderQueue",
   async (job) => {
     try {
-      console.log(job.data, "data");
       const mailTemplate = `
             <!DOCTYPE html>
             <html>

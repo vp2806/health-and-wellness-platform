@@ -26,6 +26,6 @@ async function sendMedicineNotification() {
   console.log("Cron job of medicine reminder executed at:", new Date());
 }
 
-cron.schedule("* * * * *", () => {
+cron.schedule("*/30 * * * *", () => {
   sendMedicineNotification();
 });

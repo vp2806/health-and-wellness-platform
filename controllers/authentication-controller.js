@@ -1,9 +1,8 @@
 const {
   createUser,
-  getUsers,
+  getUser,
   updateUser,
   deleteUser,
-  getUser,
 } = require("../repositories/authentication-repository");
 const { generalResponse } = require("../helpers/response-helper");
 const {
@@ -82,22 +81,6 @@ async function registerUser(req, res) {
       res,
       { success: false },
       "Something went wrong while inserting user",
-      "error",
-      true
-    );
-  }
-}
-
-async function getAllUsers(req, res) {
-  try {
-    const users = await getUsers({});
-    return generalResponse(res, users, "Fetched Users", true);
-  } catch (error) {
-    console.error("Error fetching user", error);
-    return generalResponse(
-      res,
-      { success: false },
-      "Something went wrong while fetching user",
       "error",
       true
     );
@@ -261,6 +244,16 @@ async function loginUser(req, res, next) {
       );
     }
 
+    if (!user.status) {
+      return generalResponse(
+        res,
+        { success: false },
+        "Please activate your account by setting the Password",
+        "error",
+        true
+      );
+    }
+
     if (!bcrypt.compareSync(password, user.password)) {
       return generalResponse(
         res,
@@ -381,18 +374,12 @@ async function logoutUser(req, res) {
   }
 }
 
-async function testFunction(req, res) {
-  return res.json({ success: true });
-}
-
 module.exports = {
   registerUser,
-  getAllUsers,
   modifyUser,
   removeUser,
   authenticateUser,
   loginUser,
   resetPassword,
   logoutUser,
-  testFunction,
 };

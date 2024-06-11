@@ -87,6 +87,7 @@ const loginUser = async (event) => {
         });
       }
 
+      localStorage.setItem("id", response.data.userId);
       window.location.assign("/dashboard");
     }
   }
@@ -156,89 +157,132 @@ const isLinkValid = async () => {
 };
 
 const logoutUser = async () => {
-  let response = await fetch("/logout", {
-    method: "delete",
-  });
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You are logging out!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Logout",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      let response = await fetch("/logout", {
+        method: "delete",
+      });
 
-  response = await response.json();
-  if (response.response_type === "error") {
-    return Swal.fire({
-      icon: "error",
-      title: response.message,
-      text: "Something went wrong!",
-    });
-  }
-
-  if (response.response_type) {
-    return Swal.fire({
-      title: "Good job!",
-      text: "Logged Out Successfully!",
-      icon: "success",
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "Ok",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.assign("/login");
+      response = await response.json();
+      if (response.response_type === "error") {
+        return Swal.fire({
+          icon: "error",
+          title: response.message,
+          text: "Something went wrong!",
+        });
       }
-    });
-  }
+
+      if (response.response_type) {
+        return Swal.fire({
+          title: "Good job!",
+          text: "Logged Out Successfully!",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Ok",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            localStorage.clear();
+            window.location.assign("/login");
+          }
+        });
+      }
+    }
+  });
 };
 
 const logoutAllDevices = async () => {
-  let response = await fetch("/logout-all-devices", {
-    method: "delete",
-  });
+  const socket = io();
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You are logging out from all devices!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Logout All Devices",
+  }).then(async (result) => {
+    console.log(localStorage.getItem("id"));
+    if (result.isConfirmed) {
+      let response = await fetch("/logout-all-devices", {
+        method: "delete",
+      });
 
-  response = await response.json();
-  if (response.response_type === "error") {
-    return Swal.fire({
-      icon: "error",
-      title: response.message,
-      text: "Something went wrong!",
-    });
-  }
-
-  if (response.response_type) {
-    return Swal.fire({
-      title: "Good job!",
-      text: "Logged Out from All Devices Successfully!",
-      icon: "success",
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "Ok",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.assign("/login");
+      response = await response.json();
+      if (response.response_type === "error") {
+        return Swal.fire({
+          icon: "error",
+          title: response.message,
+          text: "Something went wrong!",
+        });
       }
-    });
-  }
+
+      if (response.response_type) {
+        return Swal.fire({
+          title: "Good job!",
+          text: "Logged Out from All Devices Successfully!",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Ok",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            socket.emit("logout", {
+              userId: localStorage.getItem("id"),
+            });
+          }
+        });
+      }
+    }
+  });
 };
 
 const logoutAllDevicesExceptCurrent = async () => {
-  let response = await fetch("/logout-all-device-except-current", {
-    method: "delete",
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You are logging out from all devices except current!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Logout Devices except current",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      let response = await fetch("/logout-all-device-except-current", {
+        method: "delete",
+      });
+
+      response = await response.json();
+      if (response.response_type === "error") {
+        return Swal.fire({
+          icon: "error",
+          title: response.message,
+          text: "Something went wrong!",
+        });
+      }
+
+      if (response.response_type) {
+        socket.emit("logout", {
+          userId: localStorage.getItem("id"),
+        });
+        return Swal.fire({
+          title: "Good job!",
+          text: "Logged Out from All Devices except current Successfully!",
+          icon: "success",
+        });
+      }
+    }
   });
-
-  response = await response.json();
-  if (response.response_type === "error") {
-    return Swal.fire({
-      icon: "error",
-      title: response.message,
-      text: "Something went wrong!",
-    });
-  }
-
-  if (response.response_type) {
-    return Swal.fire({
-      title: "Good job!",
-      text: "Logged Out from All Devices except current Successfully!",
-      icon: "success",
-    });
-  }
 };
 
 const checkRegisterValidation = (registerForm) => {
   const alpahbetsRegex = /^[a-zA-Z]+$/;
-  const dateRegex = /\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])/;
   const contactNumberRegex = /^\d{10}$/gm;
 
   if (errorElements.length > 0) {
@@ -291,21 +335,6 @@ const checkRegisterValidation = (registerForm) => {
         .lastElementChild.classList.contains("text-danger") === false
     ) {
       generateErrorElement("Please enter a valid email", element.name);
-    }
-
-    if (
-      element.name === "dob" &&
-      element.value.trim() !== "" &&
-      !dateRegex.test(element.value.trim()) &&
-      document
-        .getElementById(`${element.name}Comp`)
-
-        .lastElementChild.classList.contains("text-danger") === false
-    ) {
-      generateErrorElement(
-        "Please enter a valid Date [YYYY-MM-DD]",
-        element.name
-      );
     }
 
     if (

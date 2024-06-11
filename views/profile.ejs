@@ -10,34 +10,36 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.11.1/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
+    <%- include("partials/navbar") %>
     <div class="container">
-      <div class="profile-card mx-auto my-5">
-        <a id="updateProfileButton" class="btn btn-dark mb-3">Update Profile</a>
-        <div class="border-bottom border-dark">
-          <h4>Basic Details</h4>
-        </div>
-        <div class="d-flex d-flex">
-          <div class="m-5 fs-5">
-            <p>First Name:</p>
-            <p>Last Name:</p>
-            <p>Email:</p>
-            <p>Number:</p>
-            <p>Dob:</p>
-            <p>Address:</p>
-            <p>City:</p>
-            <p>Pincode:</p>
-          </div>
-          <div class="m-5 fs-5">
-            <p id="pfirstname"></p>
-            <p id="plastname"></p>
-            <p id="pemail"></p>
-            <p id="pcontactnumber"></p>
-            <p id="pdob"></p>
-            <p id="paddress"></p>
-            <p id="pcity"></p>
-            <p id="ppincode"></p>
+      <div class="profile-card mx-auto my-5" style="max-width: 798px">
+        <div class="card mb-3">
+          <div class="row g-0">
+            <h5 class="card-title mx-2 my-2">Basic Details</h5>
+            <div class="col-md-8">
+              <div class="card-body">
+                <p class="card-text">First Name</p>
+                <p class="card-text">Last Name</p>
+                <p class="card-text">Email</p>
+                <p class="card-text">Date of Birth</p>
+                <p class="card-text">Contact Number</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card-body">
+                <p class="card-text"><%= data.firstName%></p>
+                <p class="card-text"><%= data.lastName%></p>
+                <p class="card-text"><%= data.email%></p>
+                <p class="card-text"><%= data.dob%></p>
+                <p class="card-text"><%= data.contactNumber%></p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -48,5 +50,8 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../public/js/authentication.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </body>
 </html>

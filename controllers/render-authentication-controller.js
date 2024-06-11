@@ -1,3 +1,5 @@
+const { getUser } = require("../repositories/authentication-repository");
+
 async function renderRegisterView(req, res) {
   try {
     return res.render("register");
@@ -39,7 +41,21 @@ async function renderForgotPasswordView(req, res) {
 }
 async function renderProfileView(req, res) {
   try {
-    return res.render("profile");
+    const user = await getUser({
+      where: {
+        id: req.user.id,
+      },
+    });
+
+    const data = {
+      firstName: user.first_name,
+      lastName: user.last_name,
+      email: user.email,
+      dob: user.dob,
+      contactNumber: user.contact_number,
+    };
+
+    return res.render("profile", { data });
   } catch (error) {
     console.error("Error rendering the profile view");
   }

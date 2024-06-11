@@ -22,7 +22,11 @@ const medicationValidation = [
     .notEmpty()
     .withMessage("Date can't be empty.")
     .isDate()
-    .withMessage("Invalid Date Format (YYYY-MM-DD)."),
+    .withMessage("Invalid Date Format (YYYY-MM-DD).")
+    .custom((value, { req }) => {
+      return new Date(value) >= new Date(new Date().toJSON().slice(0, 10));
+    })
+    .withMessage("Start Date can't be less than today."),
   body("time")
     .trim()
     .notEmpty()
@@ -39,6 +43,10 @@ const medicationValidation = [
         .withMessage("End Date can't be empty.")
         .isDate()
         .withMessage("Invalid Date Format (YYYY-MM-DD).")
+        .custom((value, { req }) => {
+          return new Date(value) >= new Date(new Date().toJSON().slice(0, 10));
+        })
+        .withMessage("Start Date can't be less than today.")
         .run(req);
     }
 

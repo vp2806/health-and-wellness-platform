@@ -10,6 +10,7 @@ async function createUser(userPayLoad) {
     throw error;
   }
 }
+
 async function getUsers(options) {
   try {
     const users = await user.findAll(options);
@@ -51,8 +52,9 @@ async function getUser(userPayLoad) {
 }
 module.exports = {
   createUser,
-  getUsers,
+  getUser,
   updateUser,
   deleteUser,
   getUser,
+  getUsers,
 };

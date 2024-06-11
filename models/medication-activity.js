@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       medication_id: DataTypes.INTEGER,
       done_at: DataTypes.DATE,
-      notification_timestamp: DataTypes.DATEONLY,
+      notification_timestamp: DataTypes.DATE,
     },
     {
       sequelize,

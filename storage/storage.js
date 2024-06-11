@@ -9,21 +9,22 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_SECRET,
 });
 
-async function uploadWeeklyReportToCloud(fileName) {
+async function uploadWeeklyReportToCloud(fileBuffer, fileName) {
   try {
-    const localWeeklyReportPath = path.resolve(
-      __dirname,
-      "../uploads",
-      fileName
-    );
-    const uploadReport = await cloudinary.uploader.upload(
-      localWeeklyReportPath,
-      {
-        public_id: `health-and-wealth-management-platform/${fileName}`,
-        resource_type: "auto",
-        folder: "health-and-wellness-management",
-      }
-    );
+    const uploadReport = await new Promise((resolve) => {
+      cloudinary.uploader
+        .upload_stream(
+          {
+            public_id: `health-and-wealth-management-platform/${fileName}`,
+            resource_type: "auto",
+            folder: "health-and-wellness-management",
+          },
+          (error, result) => {
+            return resolve(result);
+          }
+        )
+        .end(fileBuffer);
+    });
     return uploadReport;
   } catch (error) {
     console.error("Error Uploading an report to cloud", error);

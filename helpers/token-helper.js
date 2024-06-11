@@ -76,6 +76,7 @@ module.exports = {
     return generalResponse(
       res,
       {
+        userId: req.user.id,
         token,
       },
       "User Logged In Successfully",

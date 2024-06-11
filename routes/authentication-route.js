@@ -2,13 +2,11 @@ const { Router } = require("express");
 const router = Router();
 const {
   registerUser,
-  getAllUsers,
   modifyUser,
   removeUser,
   loginUser,
   authenticateUser,
   resetPassword,
-  testFunction,
   logoutUser,
 } = require("../controllers/authentication-controller");
 const {
@@ -40,7 +38,6 @@ router.post(
   authenticateUser
 );
 router.post("/reset-password", emailValidation, resetPassword);
-router.get("/get-users", getAllUsers);
 router.put("/update-user/:id", modifyUser);
 router.delete("/delete-user/:id", removeUser);
 
@@ -87,15 +84,6 @@ router.delete(
     failureRedirect: "/login",
   }),
   logoutAllDevices
-);
-
-router.get(
-  "/test-route",
-  passport.authenticate("jwt", {
-    session: false,
-    failureRedirect: "/login",
-  }),
-  testFunction
 );
 
 //Front-end Routes

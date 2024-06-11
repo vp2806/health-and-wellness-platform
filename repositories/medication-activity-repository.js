@@ -64,13 +64,11 @@ async function getMedicationWeeklyActivity() {
         ],
       },
       where: {
-        notification_date: {
-          [db.Sequelize.Op.lte]: new Date().toJSON().slice(0, 10),
+        notification_timestamp: {
+          [db.Sequelize.Op.lte]: new Date(),
           [db.Sequelize.Op.gte]: new Date(
             new Date().setDate(new Date().getDate() - 6)
           )
-            .toJSON()
-            .slice(0, 10),
         },
       },
     });

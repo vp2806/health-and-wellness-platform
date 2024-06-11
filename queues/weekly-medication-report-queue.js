@@ -5,7 +5,6 @@ const transporter = require("../helpers/send-mail-helper");
 const { config } = require("dotenv");
 config({ path: `.env` });
 const uploadWeeklyReportToCloud = require("../storage/storage");
-const fs = require("fs");
 const {
   createMedicationReport,
 } = require("../repositories/medication-report-repository");
@@ -29,8 +28,8 @@ const sendReportWorker = new Worker(
           medicationActivity.medication.day = "-";
         }
 
-        if (!medicationActivity.medication.end_date) {
-          medicationActivity.medication.end_date = "-";
+        if (!medicationActivity.medication.endDate) {
+          medicationActivity.medication.endDate = "-";
         }
 
         if (!medicationActivity.done_at) {
@@ -47,8 +46,7 @@ const sendReportWorker = new Worker(
         weeklyReportData[0].medication.user.first_name
       }-${weeklyReportData[0].medication.user.last_name}-Report.csv`;
 
-      const writer = csvWriter.createObjectCsvWriter({
-        path: path.resolve(__dirname, "../uploads", fileName),
+      const writer = csvWriter.createObjectCsvStringifier({
         header: [
           {
             id: "medication.medication_add_type.type",
@@ -57,18 +55,23 @@ const sendReportWorker = new Worker(
           { id: "medication.medication_name", title: "Medicine Name" },
           { id: "medication.description", title: "Medicine Description" },
           { id: "medication.day", title: "Day of the Week" },
+          { id: "medication.startDate", title: "Start Date" },
+          { id: "medication.endDate", title: "End Date" },
           { id: "medication.time", title: "Time" },
-          { id: "medication.start_date", title: "Start Date" },
-          { id: "medication.end_date", title: "End Date" },
-          { id: "notification_date", title: "Notification Date" },
+          { id: "notification_timestamp", title: "Notification Date" },
           { id: "done_at", title: "Done At" },
         ],
         headerIdDelimiter: ".",
       });
 
-      await writer.writeRecords(weeklyReportData);
+      const weeklyReportString = writer.stringifyRecords(weeklyReportData);
 
-      const uploadReport = await uploadWeeklyReportToCloud(fileName);
+      const reportDataBuffer = Buffer.from(weeklyReportString, "utf-8");
+
+      const uploadReport = await uploadWeeklyReportToCloud(
+        reportDataBuffer,
+        fileName
+      );
 
       const mailTemplate = `
             <!DOCTYPE html>
@@ -80,13 +83,13 @@ const sendReportWorker = new Worker(
                 <p>Hello, ${weeklyReportData[0].medication.user.first_name} ${
         weeklyReportData[0].medication.user.last_name
       }</p>
-                <p>I hope this email finds you well. Herewith, we've attached the weekly report from <strong>${
-                  new Date(new Date().setDate(new Date().getDate() - 6))
-                    .toISOString()
-                    .split(" ")[0]
-                } to ${
-        new Date().toISOString().split(" ")[0]
-      } </strong> . Please go through the weekly report.</p>
+                <p>I hope this email finds you well. Herewith, we've attached the weekly report from <strong>${new Date(
+                  new Date().setDate(new Date().getDate() - 6)
+                )
+                  .toISOString()
+                  .slice(0, 10)} to ${new Date()
+        .toISOString()
+        .slice(0, 10)} </strong> . Please go through the weekly report.</p>
                 <p style="margin-bottom: 0">Regards,</p>
                 <p style="margin-top: 0">Health and Wellness Management Platform</p>
             </body>
@@ -96,16 +99,16 @@ const sendReportWorker = new Worker(
       let messageOptions = {
         from: process.env.GMAIL_USER,
         to: weeklyReportData[0].medication.user.email,
-        subject: `Weekly Medicine Report [ ${
-          new Date(new Date().setDate(new Date().getDate() - 6))
-            .toISOString()
-            .split(" ")[0]
-        } to ${new Date().toISOString().split(" ")[0]}]`,
+        subject: `Weekly Medicine Report [ ${new Date(
+          new Date().setDate(new Date().getDate() - 6)
+        )
+          .toISOString()
+          .slice(0, 10)} to ${new Date().toISOString().slice(0, 10)} ]`,
         html: mailTemplate,
         attachments: [
           {
             filename: fileName,
-            path: path.resolve(__dirname, "../uploads", fileName),
+            content: reportDataBuffer,
           },
         ],
       };
@@ -114,10 +117,6 @@ const sendReportWorker = new Worker(
         if (error) {
           throw error;
         } else {
-          if (uploadReport) {
-            fs.unlinkSync(path.resolve(__dirname, "../uploads", fileName));
-          }
-
           await createMedicationReport({
             user_id: weeklyReportData[0].medication.user.id,
             report_url:
@@ -125,7 +124,7 @@ const sendReportWorker = new Worker(
               path.resolve(__dirname, "../uploads", fileName),
           });
 
-          console.log("Email successfully sent!");
+          console.log("Weekly Report Email successfully sent!");
         }
       });
     } catch (error) {

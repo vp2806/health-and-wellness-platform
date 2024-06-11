@@ -2,13 +2,13 @@ const startDateElements = document.getElementsByName("startDate");
 const timeRegex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
 
 Array.from(startDateElements).forEach((element) => {
-  element.setAttribute("min", new Date().toJSON().slice(0, 10));
+  element.setAttribute("min", new Date().toISOString().slice(0, 10));
 });
 
 if (document.getElementById("endDate")) {
   document
     .getElementById("endDate")
-    .setAttribute("min", new Date().toJSON().slice(0, 10));
+    .setAttribute("min", new Date().toISOString().slice(0, 10));
 }
 
 const handleMedicationType = (medicationAddType) => {
@@ -99,6 +99,14 @@ const checkMedicineValidation = (medicineForm) => {
           "Description must contains less than or equal to 255 characters",
           element.name
         );
+      }
+
+      if (
+        (element.name === "startDate" || element.name === "endDate") &&
+        !(new Date(element.value) >= new Date(new Date().toJSON().slice(0, 10)))
+      ) {
+        document.getElementById(`${element.id}`).style.border = "1px solid red";
+        error += " Fields are Complusory ";
       }
 
       if (element.name === "time" && !timeRegex.test(element.value)) {
