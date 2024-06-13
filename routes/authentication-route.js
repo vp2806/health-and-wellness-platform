@@ -77,14 +77,7 @@ router.delete(
   logoutAllDevicesExceptCurrent
 );
 
-router.delete(
-  "/logout-all-devices",
-  passport.authenticate("jwt", {
-    session: false,
-    failureRedirect: "/login",
-  }),
-  logoutAllDevices
-);
+router.post("/logout-all-devices", logoutAllDevices);
 
 //Front-end Routes
 router.get("/", renderLoginView);

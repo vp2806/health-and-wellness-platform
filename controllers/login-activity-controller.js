@@ -1,5 +1,5 @@
 const {
-  getUserLogins,
+  getUserLoginsWithUser,
   updateUserLogin,
 } = require("../repositories/user-login-repository");
 const { generalResponse } = require("../helpers/response-helper");
@@ -83,12 +83,19 @@ async function logoutAllDevicesExceptCurrent(req, res) {
 
 async function logoutAllDevices(req, res) {
   try {
-    const getAllDevices = await getUserLogins({
-      where: {
-        user_id: req.user.id,
-        logged_out_at: null,
-      },
+    const getAllDevices = await getUserLoginsWithUser({
+      email: req.body.email,
     });
+
+    if (getAllDevices.length === 0) {
+      return generalResponse(
+        res,
+        { success: false },
+        "Something went wrong.",
+        "error",
+        true
+      );
+    }
 
     getAllDevices.forEach(async (user) => {
       await updateUserLogin(

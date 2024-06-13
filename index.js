@@ -29,10 +29,9 @@ const io = require("socket.io")(server);
 
 io.on("connection", (client) => {
   client.on("logout", (data) => {
-    console.log(`logout-all-devices-${data.userId}`, "user");
-    client.broadcast.emit(`logout-all-devices-${data.userId}`, data);
+    client.broadcast.emit(`logout-all-devices-${data.email}`, data);
     client.broadcast.emit(
-      `logout-all-devices-except-current-${data.userId}`,
+      `logout-all-devices-except-current-${data.email}`,
       data
     );
   });

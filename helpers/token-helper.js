@@ -77,6 +77,7 @@ module.exports = {
       res,
       {
         userId: req.user.id,
+        email: req.user.email,
         token,
       },
       "User Logged In Successfully",

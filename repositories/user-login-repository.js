@@ -1,5 +1,5 @@
 const db = require("../models");
-const { user_login } = db;
+const { user_login, user } = db;
 
 async function createUserLogin(userLoginPayLoad) {
   try {
@@ -10,9 +10,27 @@ async function createUserLogin(userLoginPayLoad) {
     throw error;
   }
 }
+
 async function getUserLogins(options) {
   try {
     const getAllUserLogins = await user_login.findAll(options);
+    return getAllUserLogins;
+  } catch (error) {
+    console.error("Error getting user logins.", error);
+    throw error;
+  }
+}
+
+async function getUserLoginsWithUser(options) {
+  try {
+    const getAllUserLogins = await user_login.findAll({
+      include: user,
+      attributes: ["id"],
+      where: {
+        "$user.email$": options.email,
+        logged_out_at: null,
+      },
+    });
     return getAllUserLogins;
   } catch (error) {
     console.error("Error getting user logins.", error);
@@ -33,4 +51,9 @@ async function updateUserLogin(userLoginPayLoad, options) {
   }
 }
 
-module.exports = { createUserLogin, getUserLogins, updateUserLogin };
+module.exports = {
+  createUserLogin,
+  getUserLogins,
+  updateUserLogin,
+  getUserLoginsWithUser,
+};

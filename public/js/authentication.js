@@ -7,7 +7,7 @@ const registerUser = async (event) => {
     const registerForm = document.getElementById("registerUser");
     const isValidData = checkRegisterValidation(registerForm);
     if (isValidData) {
-      let response = await callApi("/register", registerForm, "post");
+      let response = await callApi("/register", registerForm, "post", null);
       if (response.response_type === "error") {
         return Swal.fire({
           icon: "error",
@@ -39,7 +39,8 @@ const setPassword = async (event) => {
           window.location.pathname.split("/reset-password/")[1]
         }`,
         passwordForm,
-        "post"
+        "post",
+        null
       );
 
       if (response.response_type === "error") {
@@ -64,15 +65,16 @@ const setPassword = async (event) => {
           confirmButtonText: "Login",
         }).then(async (result) => {
           if (result.isConfirmed) {
-            let response = await fetch("/logout-all-devices", {
-              method: "delete",
-            });
-
-            response = await response.json();
-            if (response.response_type === "error") {
+            let logoutDevices = await callApi(
+              "/logout-all-devices",
+              null,
+              "post",
+              response.data
+            );
+            if (logoutDevices.response_type === "error") {
               return Swal.fire({
                 icon: "error",
-                title: response.message,
+                title: logoutDevices.message,
                 text: "Something went wrong!",
               });
             }
@@ -89,7 +91,7 @@ const loginUser = async (event) => {
     const loginForm = document.getElementById("loginUser");
     const isValidData = checkLoginValidation(loginForm);
     if (isValidData) {
-      let response = await callApi("/login", loginForm, "post");
+      let response = await callApi("/login", loginForm, "post", null);
 
       if (response.response_type === "error") {
         return Swal.fire({
@@ -98,8 +100,7 @@ const loginUser = async (event) => {
           text: "Something went wrong!",
         });
       }
-
-      localStorage.setItem("id", response.data.userId);
+      localStorage.setItem("email", response.data.email);
       window.location.assign("/dashboard");
     }
   }
@@ -114,7 +115,8 @@ const verifyEmail = async (event) => {
       let response = await callApi(
         "/reset-password",
         forgotPasswordForm,
-        "post"
+        "post",
+        null
       );
 
       if (response.response_type === "error") {
@@ -151,7 +153,8 @@ const isLinkValid = async () => {
       window.location.pathname.split("/reset-password/")[1]
     }`,
     null,
-    "post"
+    "post",
+    null
   );
 
   if (response.response_type === "error" && !response.data.errors) {
@@ -221,22 +224,22 @@ const logoutAllDevices = async () => {
     cancelButtonColor: "#d33",
     confirmButtonText: "Logout All Devices",
   }).then(async (result) => {
-    console.log(localStorage.getItem("id"));
     if (result.isConfirmed) {
-      let response = await fetch("/logout-all-devices", {
-        method: "delete",
+      let logoutDevices = await callApi("/logout-all-devices", null, "post", {
+        user: {
+          email: localStorage.getItem("email"),
+        },
       });
 
-      response = await response.json();
-      if (response.response_type === "error") {
+      if (logoutDevices.response_type === "error") {
         return Swal.fire({
           icon: "error",
-          title: response.message,
+          title: logoutDevices.message,
           text: "Something went wrong!",
         });
       }
 
-      if (response.response_type) {
+      if (logoutDevices.response_type) {
         return Swal.fire({
           title: "Good job!",
           text: "Logged Out from All Devices Successfully!",
@@ -246,8 +249,9 @@ const logoutAllDevices = async () => {
         }).then((result) => {
           if (result.isConfirmed) {
             socket.emit("logout", {
-              userId: localStorage.getItem("id"),
+              email: localStorage.getItem("email"),
             });
+            localStorage.clear();
           }
         });
       }
@@ -281,7 +285,7 @@ const logoutAllDevicesExceptCurrent = async () => {
 
       if (response.response_type) {
         socket.emit("logout", {
-          userId: localStorage.getItem("id"),
+          email: localStorage.getItem("email"),
         });
         return Swal.fire({
           title: "Good job!",
@@ -519,6 +523,8 @@ const callApi = async (url, formElement, method, payLoad) => {
     Array.from(formElement.elements).forEach((element) => {
       data.set(element.name, element.value);
     });
+  } else if (payLoad) {
+    data.set("email", payLoad.user.email);
   } else {
     data = {};
   }

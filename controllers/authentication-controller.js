@@ -201,7 +201,16 @@ async function authenticateUser(req, res) {
       }
     );
 
-    return generalResponse(res, [], "Password Set Successfully", true);
+    return generalResponse(
+      res,
+      {
+        user: {
+          email: user.email,
+        },
+      },
+      "Password Set Successfully",
+      true
+    );
   } catch (error) {
     console.error("Error authenticating user", error);
     return generalResponse(
@@ -265,6 +274,7 @@ async function loginUser(req, res, next) {
     }
     req.user = {
       id: user.dataValues.id,
+      email: user.dataValues.email,
     };
     next();
   } catch (error) {
