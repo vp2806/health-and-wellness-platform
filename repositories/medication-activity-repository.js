@@ -23,6 +23,9 @@ async function getMedicationActivities(options) {
       where: {
         "$medication.user_id$": options.userId,
         "$medication.id$": options.id,
+        notification_timestamp: {
+          [db.Sequelize.Op.startsWith]: options.notificationStamp,
+        },
       },
     });
     return medicationActivities;
@@ -68,7 +71,7 @@ async function getMedicationWeeklyActivity() {
           [db.Sequelize.Op.lte]: new Date(),
           [db.Sequelize.Op.gte]: new Date(
             new Date().setDate(new Date().getDate() - 6)
-          )
+          ),
         },
       },
     });

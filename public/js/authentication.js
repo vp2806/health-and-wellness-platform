@@ -62,8 +62,20 @@ const setPassword = async (event) => {
           icon: "success",
           confirmButtonColor: "#3085d6",
           confirmButtonText: "Login",
-        }).then((result) => {
+        }).then(async (result) => {
           if (result.isConfirmed) {
+            let response = await fetch("/logout-all-devices", {
+              method: "delete",
+            });
+
+            response = await response.json();
+            if (response.response_type === "error") {
+              return Swal.fire({
+                icon: "error",
+                title: response.message,
+                text: "Something went wrong!",
+              });
+            }
             window.location.assign("/login");
           }
         });

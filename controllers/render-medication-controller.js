@@ -17,9 +17,7 @@ async function renderMedicationActivityView(req, res) {
     const medication = await getMedicationActivities({
       id: req.query.medicine,
       userId: req.user.id,
-      notification_timestamp: {
-        [Op.lte]: req.query.current,
-      },
+      notificationStamp: req.query.current,
     });
 
     if (medication.length === 0) {
@@ -49,7 +47,6 @@ async function renderMedicationActivityView(req, res) {
         },
       }
     );
-    console.log(update);
 
     return res.render("medicine-activity", {
       data: [],
