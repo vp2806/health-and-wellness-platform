@@ -1,6 +1,7 @@
 const {
   getUserLoginsWithUser,
   updateUserLogin,
+  getUserLogins,
 } = require("../repositories/user-login-repository");
 const { generalResponse } = require("../helpers/response-helper");
 
