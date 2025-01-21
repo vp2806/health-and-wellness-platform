@@ -14,6 +14,7 @@
   "author": "Vivek Panchal",
   "license": "ISC",
   "dependencies": {
+    "@vercel/node": "^5.0.2",
     "bcrypt": "^5.1.1",
     "bullmq": "^5.7.14",
     "cloudinary": "^2.2.0",
