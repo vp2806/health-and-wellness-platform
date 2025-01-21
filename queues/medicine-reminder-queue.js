@@ -6,11 +6,14 @@ const {
   createMedicationActivity,
 } = require("../repositories/medication-activity-repository");
 
+const connection = {
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password: process.env.REDIS_PASSWORD,
+};
+
 const medicineReminderQueue = new Queue("reminderQueue", {
-  connection: {
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-  },
+  connection,
 });
 
 const sendMedicineReminderWorker = new Worker(
@@ -65,10 +68,7 @@ const sendMedicineReminderWorker = new Worker(
     }
   },
   {
-    connection: {
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-    },
+    connection,
   }
 );
 

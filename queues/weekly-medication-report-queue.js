@@ -9,11 +9,14 @@ const {
   createMedicationReport,
 } = require("../repositories/medication-report-repository");
 
+const connection = {
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password: process.env.REDIS_PASSWORD,
+};
+
 const medicationReportQueue = new Queue("reportQueue", {
-  connection: {
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-  },
+  connection,
 });
 
 const sendReportWorker = new Worker(
@@ -132,10 +135,7 @@ const sendReportWorker = new Worker(
     }
   },
   {
-    connection: {
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-    },
+    connection,
   }
 );
 
