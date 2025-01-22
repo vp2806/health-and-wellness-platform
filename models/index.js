@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
+const mysql2 = require("mysql2");
 const process = require("process");
 const basename = path.basename(__filename);
 const db = {};
@@ -16,6 +17,7 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: "mysql",
+    dialectModule: mysql2,
     define: {
       underscored: true,
     },
