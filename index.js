@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const { config } = require("dotenv");
 config({ path: `.env` });
 const router = require("./routes/index-route");
@@ -8,6 +9,7 @@ const cookieParser = require("cookie-parser");
 require("./jobs/medication-notification-job");
 // require("./jobs/weekly-report-job");
 
+app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(cookieParser());
 app.use("/public", express.static("public"));
